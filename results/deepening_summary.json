@@ -1,0 +1,29 @@
+{
+  "mus": [
+    0.9,
+    0.7,
+    0.5
+  ],
+  "decel_limit_mps2": {
+    "0.9": 9.0,
+    "0.7": 7.0,
+    "0.5": 5.0
+  },
+  "friction_aware": {
+    "0.7": {
+      "ttc_fcw_s": 3.0,
+      "ttc_pb_s": 2.0,
+      "ttc_fb_s": 1.5,
+      "partial_decel_mps2": 6.0,
+      "full_decel_mps2": 9.0
+    },
+    "0.5": {
+      "ttc_fcw_s": 4.2,
+      "ttc_pb_s": 3.2,
+      "ttc_fb_s": 1.3,
+      "partial_decel_mps2": 6.0,
+      "full_decel_mps2": 9.0
+    }
+  },
+  "runtime_s": 244.8
+}

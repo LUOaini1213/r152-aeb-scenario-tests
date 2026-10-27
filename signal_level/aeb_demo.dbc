@@ -1,0 +1,99 @@
+VERSION "P5-signal-level 1.0 SYNTHETIC"
+
+
+NS_ :
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	BA_DEF_DEF_
+
+BS_:
+
+BU_: RADAR ESC AEB_ECU BRAKE_ECU HMI
+
+
+BO_ 160 AEB_CMD: 8 AEB_ECU
+ SG_ AEB_CRC : 0|8@1+ (1,0) [0|255] "" BRAKE_ECU,HMI
+ SG_ AEB_AliveCtr : 8|4@1+ (1,0) [0|14] "" BRAKE_ECU,HMI
+ SG_ AEB_State : 12|3@1+ (1,0) [0|5] "" BRAKE_ECU,HMI
+ SG_ AEB_BrkReqActive : 15|1@1+ (1,0) [0|1] "" BRAKE_ECU
+ SG_ AEB_AccelReq : 16|12@1- (0.01,0) [-16|16] "m/s2" BRAKE_ECU
+ SG_ AEB_WarnLvl : 28|2@1+ (1,0) [0|3] "" HMI
+ SG_ AEB_Avail : 30|2@1+ (1,0) [0|3] "" HMI,BRAKE_ECU
+ SG_ AEB_FaultReason : 32|4@1+ (1,0) [0|15] "" HMI
+
+BO_ 176 EGO_SPEED: 8 ESC
+ SG_ ESC_CRC : 0|8@1+ (1,0) [0|255] "" AEB_ECU
+ SG_ ESC_AliveCtr : 8|4@1+ (1,0) [0|14] "" AEB_ECU
+ SG_ VehSpdValid : 12|1@1+ (1,0) [0|1] "" AEB_ECU
+ SG_ VehSpd : 16|16@1+ (0.01,0) [0|300] "km/h" AEB_ECU
+
+BO_ 288 RADAR_TGT: 8 RADAR
+ SG_ RADAR_CRC : 7|8@0+ (1,0) [0|255] "" AEB_ECU
+ SG_ RADAR_AliveCtr : 11|4@0+ (1,0) [0|14] "" AEB_ECU
+ SG_ TgtValid : 15|1@0+ (1,0) [0|1] "" AEB_ECU
+ SG_ TgtQuality : 14|2@0+ (1,0) [0|3] "" AEB_ECU
+ SG_ TgtDist : 20|13@0+ (0.05,0) [0|409.55] "m" AEB_ECU
+ SG_ TgtRelSpd : 35|12@0- (0.05,0) [-70|70] "m/s" AEB_ECU
+
+
+
+CM_ "SYNTHETIC demo database for the P5 signal-level AEB test (personal project, AI-assisted). All frame IDs, cycle times, signal layouts, resolutions and ranges are DESIGN ASSUMPTIONS of this project; none is taken from an OEM, a supplier or a standard. Classic CAN, 8-byte frames. E2E layout follows AUTOSAR E2E Profile 1 variant 1A positions (CRC in byte 0, counter in the low nibble of byte 1, Data ID mode BOTH), see signal_level/e2e.py.";
+CM_ BU_ RADAR "Front radar: one in-lane target object (P5 RadarModel output).";
+CM_ BU_ ESC "Brake/ESC ECU as the source of the vehicle speed.";
+CM_ BU_ AEB_ECU "AEB function ECU running the vendored can-bus-analyzer state machine every 10 ms.";
+CM_ BU_ BRAKE_ECU "Brake actuator side: executes AEB_AccelReq.";
+CM_ BU_ HMI "Instrument cluster: FCW display and AEB failure telltale.";
+CM_ BO_ 160 "AEB output to brake and HMI. Cycle 10 ms = AEB task period (DESIGN ASSUMPTION; chosen so that a fault-free bus reproduces the P5 direct closed loop).";
+CM_ SG_ 160 AEB_CRC "E2E CRC-8 (polynomial 0x1D, Profile 1 start/XOR 0x00) over Data ID (2 bytes) and bytes 1..7.";
+CM_ SG_ 160 AEB_AliveCtr "E2E counter 0..14 (0xF skipped), incremented every transmission.";
+CM_ SG_ 160 AEB_State "Vendored state machine state S (project encoding).";
+CM_ SG_ 160 AEB_BrkReqActive "1 while the AEB requests a deceleration.";
+CM_ SG_ 160 AEB_AccelReq "Requested longitudinal acceleration, negative = braking. Resolution 0.01 m/s2 (DESIGN ASSUMPTION).";
+CM_ SG_ 160 AEB_WarnLvl "0 none, 1 collision warning, 2 warning plus brake intervention.";
+CM_ SG_ 160 AEB_Avail "0 available, 1 degraded (running on held input data), 2 unavailable (failure telltale on).";
+CM_ SG_ 160 AEB_FaultReason "Bit mask: bit0 radar timeout, bit1 radar E2E/plausibility, bit2 speed timeout, bit3 speed E2E/plausibility.";
+CM_ BO_ 176 "Vehicle speed. Cycle 20 ms = P5 speed_sample_s (DESIGN ASSUMPTION).";
+CM_ SG_ 176 ESC_CRC "E2E CRC-8 (polynomial 0x1D, Profile 1 start/XOR 0x00) over Data ID (2 bytes) and bytes 1..7.";
+CM_ SG_ 176 ESC_AliveCtr "E2E counter 0..14 (0xF skipped).";
+CM_ SG_ 176 VehSpdValid "Speed qualifier, 1 = valid.";
+CM_ SG_ 176 VehSpd "Vehicle speed. Resolution 0.01 km/h, plausible range 0..300 km/h (DESIGN ASSUMPTION).";
+CM_ BO_ 288 "Radar target object. Cycle 50 ms = P5 radar update period (DESIGN ASSUMPTION). Motorola byte order.";
+CM_ SG_ 288 RADAR_CRC "E2E CRC-8 (polynomial 0x1D, Profile 1 start/XOR 0x00) over Data ID (2 bytes) and bytes 1..7.";
+CM_ SG_ 288 RADAR_AliveCtr "E2E counter 0..14 (0xF skipped).";
+CM_ SG_ 288 TgtValid "1 = in-lane target present.";
+CM_ SG_ 288 TgtQuality "Existence quality 0..3; the AEB ECU uses the target only if TgtValid = 1 and TgtQuality >= 2 (DESIGN ASSUMPTION).";
+CM_ SG_ 288 TgtDist "Longitudinal distance, bumper to bumper. Resolution 0.05 m, range 0..409.55 m (DESIGN ASSUMPTION).";
+CM_ SG_ 288 TgtRelSpd "Range rate v_target - v_ego, negative = closing. Resolution 0.05 m/s, plausible range -70..70 m/s (DESIGN ASSUMPTION).";
+BA_DEF_ "BusType" STRING ;
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
+BA_DEF_ BO_ "GenMsgSendType" ENUM "Cyclic","Spontaneous","NoMsgSendType";
+BA_DEF_ BO_ "E2E_DataID" HEX 0 65535;
+BA_DEF_ BO_ "E2E_Profile" STRING ;
+BA_DEF_DEF_ "BusType" "CAN";
+BA_DEF_DEF_ "GenMsgCycleTime" 0;
+BA_DEF_DEF_ "GenMsgSendType" "NoMsgSendType";
+BA_DEF_DEF_ "E2E_DataID" 0;
+BA_DEF_DEF_ "E2E_Profile" "";
+BA_ "BusType" "CAN";
+BA_ "GenMsgCycleTime" BO_ 160 10;
+BA_ "GenMsgCycleTime" BO_ 176 20;
+BA_ "GenMsgCycleTime" BO_ 288 50;
+BA_ "GenMsgSendType" BO_ 160 0;
+BA_ "GenMsgSendType" BO_ 176 0;
+BA_ "GenMsgSendType" BO_ 288 0;
+BA_ "E2E_DataID" BO_ 160 4256;
+BA_ "E2E_DataID" BO_ 176 4272;
+BA_ "E2E_DataID" BO_ 288 4384;
+BA_ "E2E_Profile" BO_ 160 "P01-1A";
+BA_ "E2E_Profile" BO_ 176 "P01-1A";
+BA_ "E2E_Profile" BO_ 288 "P01-1A";
+VAL_ 160 AEB_State 0 "OFF" 1 "STANDBY" 2 "FCW" 3 "PARTIAL_BRAKE" 4 "FULL_BRAKE" 5 "FAULT" ;
+VAL_ 160 AEB_WarnLvl 0 "None" 1 "Warning" 2 "WarningAndBrake" 3 "Reserved" ;
+VAL_ 160 AEB_Avail 0 "Available" 1 "Degraded" 2 "Unavailable" 3 "Reserved" ;
+VAL_ 176 VehSpdValid 0 "Invalid" 1 "Valid" ;
+VAL_ 288 TgtValid 0 "NoTarget" 1 "Valid" ;
+VAL_ 288 TgtQuality 0 "NoTarget" 1 "Low" 2 "Medium" 3 "High" ;
+

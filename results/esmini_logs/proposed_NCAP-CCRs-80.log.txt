@@ -1,0 +1,70 @@
+esmini GIT REV: v3.10.2-0-d1d4423b
+esmini GIT TAG: v3.10.2
+esmini GIT BRANCH: tags/v3.10.2^0
+esmini BUILD VERSION: 6464
+[] [info] Loaded CCRs.xosc
+[2026-10-27 15:33:04]
+[] [info] Player options: --osc CCRs.xosc --camera_mode orbit --csv_logger ../results/esmini_logs/proposed_NCAP-CCRs-80.csv --collision --disable_stdout --fixed_timestep 0.002 --ground_plane auto --headless --info_text 1 --logfile_path ../results/esmini_logs/proposed_NCAP-CCRs-80.log.txt --log_level info --record ../results/esmini_logs/proposed_NCAP-CCRs-80.dat --text_scale 1.0 --traj_filter 0.1 --light_mode auto 
+[] [info] Run simulation decoupled from realtime, with fixed timestep: 0.00
+[] [info] Generated seed 1521297110
+[] [info] Loading CCRs.xosc (v1.2)
+[] [info] ParameterDeclarations contains parameters with modified values, all parameters and variables will be re-evaluated
+[] [warn] Parameter value EgoSpeed updated from 13.888889 to 22.222222
+[] [warn] Parameter value TargetSpeed updated from 0.0 to 0.000000
+[] [warn] Parameter value EgoStartS updated from 50.0 to 50.000000
+[] [warn] Parameter value TargetStartS updated from 137.733333 to 187.733333
+[] [warn] Parameter value SimEndTime updated from 20.0 to 25.000000
+[] [warn] Parameter value ExtCtrl updated from false to true
+[] [warn] Parameter value CaseId updated from default to NCAP-CCRs-80
+[] [info] 0 variables
+[] [info] Loaded OpenDRIVE: straight_road.xodr
+[] [info] 3D model search paths attempted for file car_white.osgb:
+[] [info]   car_white.osgb
+[] [info]   .//./car_white.osgb
+[] [info]   <esmini_dir>\bin/../resources/models//./car_white.osgb
+[] [info]   .//../models/./car_white.osgb
+[] [warn] 3D model car_white.osgb not located, using specified file path
+[] [info] Assigned 3D model car_white.osgb to vehicle VUT
+[] [info] Add and deactivate new object "Ego" (id 0)
+[] [info] 3D model search paths attempted for file car_red.osgb:
+[] [info]   car_red.osgb
+[] [info]   .//./car_red.osgb
+[] [info]   <esmini_dir>\bin/../resources/models//./car_red.osgb
+[] [info]   .//../models/./car_red.osgb
+[] [warn] 3D model car_red.osgb not located, using specified file path
+[] [info] Assigned 3D model car_red.osgb to vehicle GVT
+[] [info] Add and deactivate new object "Target" (id 1)
+[] [info] Parsing global action EnvironmentAction
+[] [info] Expr ${$RoadMu / 0.9} = 0.9 / 0.9 = 1.0000000000
+[] [info] 8 parameters:
+[] [info]    RoadMu = 0.9
+[] [info]    CaseId = NCAP-CCRs-80
+[] [info]    ExtCtrl = true
+[] [info]    SimEndTime = 25.000000
+[] [info]    TargetStartS = 187.733333
+[] [info]    EgoStartS = 50.000000
+[] [info]    TargetSpeed = 0.000000
+[] [info]    EgoSpeed = 22.222222
+[0.000] [info] Log all vehicle data in csv file
+[0.000] [info] Recording data to file ../results/esmini_logs/proposed_NCAP-CCRs-80.dat
+[0.000] [info] Init EnvironmentAction initState -> startTransition -> runningState
+[0.000] [info] Init EnvironmentAction runningState -> stopTransition -> completeState
+[0.000] [info] Init Ego TeleportAction initState -> startTransition -> runningState
+[0.000] [info] Starting teleport Action
+[0.000] [info] Ego New position:
+[0.000] [info] Pos(50.00, -1.75, 0.00) Rot(0.00, 0.00, 0.00) roadId 1 laneId -1 s 50.00 offset 0.00 t -1.75
+[0.000] [info] Init Ego TeleportAction runningState -> endTransition -> completeState
+[0.000] [info] Init Ego LongitudinalAction initState -> startTransition -> runningState
+[0.000] [info] Init Ego LongitudinalAction runningState -> endTransition -> completeState
+[0.000] [info] Controller AEB_ExternalController active on domains: Lateral & Longitudinal (mask=0x3)
+[0.000] [info] Init Ego ControllerAction initState -> startTransition -> runningState
+[0.000] [info] Init Ego ControllerAction runningState -> endTransition -> completeState
+[0.000] [info] Init Target TeleportAction initState -> startTransition -> runningState
+[0.000] [info] Starting teleport Action
+[0.000] [info] Target New position:
+[0.000] [info] Pos(187.73, -1.75, 0.00) Rot(0.00, 0.00, 0.00) roadId 1 laneId -1 s 187.73 offset 0.00 t -1.75
+[0.000] [info] Init Target TeleportAction runningState -> endTransition -> completeState
+[0.000] [info] Init Target LongitudinalAction initState -> startTransition -> runningState
+[0.000] [info] Init Target LongitudinalAction runningState -> endTransition -> completeState
+[0.000] [info] storyBoard initState -> startTransition -> runningState
+[7.570] [info] Closing

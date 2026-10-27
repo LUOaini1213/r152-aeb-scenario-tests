@@ -1,0 +1,8 @@
+variant,r152_all_ok,ncap_total,late_contact_runs,late_contact_max_kph,late_contact_cases
+proposed,True,5.2,18,7.96,NCAP-CCRb-100 NCAP-CCRb-130 NCAP-CCRb-60 NCAP-CCRb-70
+proposed + v_min_kph=4,True,5.2,10,3.34,NCAP-CCRb-100 NCAP-CCRb-60
+proposed + v_min_kph=2,True,5.2,1,1.72,NCAP-CCRb-100
+proposed + v_min_kph=0.6,True,5.2,0,0.0,
+proposed + brake_min_dwell_s=1,True,5.2,14,7.96,NCAP-CCRb-120 NCAP-CCRb-130 NCAP-CCRb-60 NCAP-CCRb-70
+proposed + brake_min_dwell_s=2,True,5.2,3,2.24,NCAP-CCRb-80
+proposed + brake_min_dwell_s=3,True,5.2,3,7.68,NCAP-CCRb-120

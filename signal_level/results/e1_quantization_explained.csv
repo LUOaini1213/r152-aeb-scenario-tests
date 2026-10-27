@@ -1,0 +1,96 @@
+case_id,config,phase,dv_kph,dt_fcw_s,dt_brake_s,dmin_gap_m,startup_only_off_vs_standby,t_first_state_diff,state_direct,state_dbc,ttc_true,closing_speed_mps,ttc_direct_float,ttc_dbc_quantized,kind,threshold_s
+R152-S20,original,0.0,0.0,0.05,0.05,-0.2778,False,3.4,FCW,STANDBY,2.6,5.556,2.599999,2.603604,escalation threshold,2.6
+R152-S20,proposed,0.0,0.0,0.05,0.05,-0.2778,False,3.0,FCW,STANDBY,3.0,5.556,2.999999,3.0,escalation threshold,3.0
+R152-S42,original,0.0,0.0,0.05,0.05,0.0139,False,3.4,FCW,STANDBY,2.6,11.667,2.6,2.60515,escalation threshold,2.6
+R152-S42,original,0.02,0.0,0.0,0.0,-0.1991,False,5.52,FULL_BRAKE,PARTIAL_BRAKE,0.89951,8.063,0.899511,0.900621,escalation threshold,0.9
+R152-S42,original,0.04,0.0,0.0,0.0,-0.2046,False,5.49,FULL_BRAKE,PARTIAL_BRAKE,0.8989,8.263,0.898898,0.90303,escalation threshold,0.9
+R152-S42,proposed,0.0,0.0,0.05,0.05,-0.5833,False,3.0,FCW,STANDBY,3.0,11.667,3.0,3.004292,escalation threshold,3.0
+R152-S60,original,0.0,0.0,0.05,0.05,-0.1074,False,3.4,FCW,STANDBY,2.6,16.667,2.6,2.603604,escalation threshold,2.6
+R152-S60,proposed,0.0,0.0,0.05,0.05,-0.8334,False,3.0,FCW,STANDBY,3.0,16.667,3.0,3.003003,escalation threshold,3.0
+R152-M30,original,0.0,0.0,-0.05,-0.05,0.1389,False,3.4,STANDBY,FCW,2.6,2.778,2.600002,2.571429,escalation threshold,2.6
+R152-M30,original,0.04,0.0,-0.05,-0.05,0.1389,False,3.39,STANDBY,FCW,2.61,2.778,2.610002,2.589286,escalation threshold,2.6
+R152-M30,proposed,0.0,0.0,-0.05,-0.05,0.1389,False,3.0,STANDBY,FCW,3.0,2.778,3.000002,2.982143,escalation threshold,3.0
+R152-M30,proposed,0.04,0.0,-0.05,0.0,0.0,False,2.99,STANDBY,FCW,3.01,2.778,3.010002,2.982143,escalation threshold,3.0
+R152-S10,original,0.04,0.0,-0.05,-0.05,0.1389,False,3.39,STANDBY,FCW,2.61,2.778,2.61,2.589286,escalation threshold,2.6
+R152-S10,proposed,0.04,0.0,-0.05,0.0,0.0,False,2.99,STANDBY,FCW,3.01,2.778,3.01,2.982143,escalation threshold,3.0
+R152-S15,original,0.0,0.0,0.05,0.05,-0.2083,False,3.4,FCW,STANDBY,2.6,4.167,2.6,2.614458,escalation threshold,2.6
+R152-S15,original,0.01,0.0,0.05,0.0,0.0,False,3.41,FCW,STANDBY,2.59,4.167,2.59,2.60241,escalation threshold,2.6
+R152-S15,proposed,0.0,0.0,0.05,0.05,-0.2083,False,3.0,FCW,STANDBY,3.0,4.167,3.0,3.012048,escalation threshold,3.0
+R152-S15,proposed,0.01,0.0,0.05,0.05,-0.2083,False,3.01,FCW,STANDBY,2.99,4.167,2.99,3.0,escalation threshold,3.0
+R152-S25,original,0.0,0.0,-0.05,-0.05,0.3472,False,3.4,STANDBY,FCW,2.6,6.944,2.6,2.597122,escalation threshold,2.6
+R152-S30,original,0.0,0.0,-0.05,-0.05,0.4166,False,3.4,STANDBY,FCW,2.6,8.333,2.6,2.592814,escalation threshold,2.6
+R152-S30,proposed,0.0,0.0,-0.05,-0.05,0.4167,False,3.0,STANDBY,FCW,3.0,8.333,3.0,2.994012,escalation threshold,3.0
+R152-S35,original,0.01,0.0,0.0,0.0,0.0,False,7.01,PARTIAL_BRAKE,STANDBY,14.70765,0.118,14.707652,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+R152-S35,original,0.04,0.0,0.0,0.0,-0.1063,False,5.89,FULL_BRAKE,PARTIAL_BRAKE,0.89615,4.718,0.896148,0.904255,escalation threshold,0.9
+R152-S35,proposed,0.0,0.0,0.0,0.0,0.0,False,5.85,PARTIAL_BRAKE,STANDBY,79.07131,0.116,79.071306,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+R152-S35,proposed,0.01,0.0,0.0,0.0,0.0,False,5.81,PARTIAL_BRAKE,STANDBY,82.41693,0.116,82.416925,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+R152-S35,proposed,0.03,0.0,0.0,0.0,0.0,False,5.83,PARTIAL_BRAKE,STANDBY,80.74412,0.116,80.744116,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+R152-S45,original,0.0,0.0,0.05,0.05,-0.1638,False,3.4,FCW,STANDBY,2.6,12.5,2.6,2.6,escalation threshold,2.6
+R152-S45,proposed,0.0,0.0,0.05,0.05,-0.625,False,3.0,FCW,STANDBY,3.0,12.5,3.0,3.0,escalation threshold,3.0
+R152-S50,proposed,0.0,0.0,0.0,0.05,-0.6944,False,4.0,PARTIAL_BRAKE,FCW,2.0,13.889,2.0,2.0,escalation threshold,2.0
+R152-M35,original,0.01,0.0,0.05,0.05,-0.2084,False,3.41,FCW,STANDBY,2.59,4.167,2.590001,2.60241,escalation threshold,2.6
+R152-M35,proposed,0.01,0.0,0.05,0.05,-0.2083,False,3.01,FCW,STANDBY,2.99,4.167,2.990001,3.0,escalation threshold,3.0
+R152-M45,original,0.0,0.0,-0.05,-0.05,0.3472,False,3.4,STANDBY,FCW,2.6,6.944,2.6,2.597122,escalation threshold,2.6
+R152-M50,original,0.0,0.0,-0.05,-0.05,0.4166,False,3.4,STANDBY,FCW,2.6,8.333,2.6,2.592814,escalation threshold,2.6
+R152-M50,proposed,0.0,0.0,-0.05,-0.05,0.4167,False,3.0,STANDBY,FCW,3.0,8.333,3.0,2.994012,escalation threshold,3.0
+R152-M55,original,0.01,0.0,0.0,0.0,0.0,False,7.01,PARTIAL_BRAKE,STANDBY,14.70765,0.118,14.707652,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+R152-M55,original,0.02,0.0,0.0,0.0,0.0,False,7.02,PARTIAL_BRAKE,STANDBY,13.88536,0.118,13.885359,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+R152-M55,original,0.04,0.0,0.0,0.0,-0.1063,False,5.89,FULL_BRAKE,PARTIAL_BRAKE,0.89615,4.718,0.896148,0.904255,escalation threshold,0.9
+R152-M55,proposed,0.0,0.0,0.0,0.0,0.0,False,5.85,PARTIAL_BRAKE,STANDBY,79.07131,0.116,79.071306,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+R152-M55,proposed,0.01,0.0,0.0,0.0,0.0,False,5.81,PARTIAL_BRAKE,STANDBY,82.41693,0.116,82.416925,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+R152-M55,proposed,0.02,0.0,0.0,0.0,0.0,False,5.82,PARTIAL_BRAKE,STANDBY,81.58052,0.116,81.580521,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+R152-M55,proposed,0.03,0.0,0.0,0.0,0.0,False,5.83,PARTIAL_BRAKE,STANDBY,80.74412,0.116,80.744116,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+R152-M55,proposed,0.04,0.0,0.0,0.0,0.0,False,5.84,PARTIAL_BRAKE,STANDBY,79.90771,0.116,79.907711,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+NCAP-CCRs-10,original,0.04,0.0,-0.05,-0.05,0.1389,False,3.39,STANDBY,FCW,2.61,2.778,2.61,2.589286,escalation threshold,2.6
+NCAP-CCRs-10,proposed,0.04,0.0,-0.05,0.0,0.0,False,2.99,STANDBY,FCW,3.01,2.778,3.01,2.982143,escalation threshold,3.0
+NCAP-CCRs-20,original,0.0,0.0,0.05,0.05,-0.2778,False,3.4,FCW,STANDBY,2.6,5.556,2.599999,2.603604,escalation threshold,2.6
+NCAP-CCRs-20,proposed,0.0,0.0,0.05,0.05,-0.2778,False,3.0,FCW,STANDBY,3.0,5.556,2.999999,3.0,escalation threshold,3.0
+NCAP-CCRs-30,original,0.0,0.0,-0.05,-0.05,0.4166,False,3.4,STANDBY,FCW,2.6,8.333,2.6,2.592814,escalation threshold,2.6
+NCAP-CCRs-30,proposed,0.0,0.0,-0.05,-0.05,0.4167,False,3.0,STANDBY,FCW,3.0,8.333,3.0,2.994012,escalation threshold,3.0
+NCAP-CCRs-50,proposed,0.0,0.0,0.0,0.05,-0.6944,False,4.0,PARTIAL_BRAKE,FCW,2.0,13.889,2.0,2.0,escalation threshold,2.0
+NCAP-CCRs-60,original,0.0,0.0,0.05,0.05,-0.1074,False,3.4,FCW,STANDBY,2.6,16.667,2.6,2.603604,escalation threshold,2.6
+NCAP-CCRs-60,proposed,0.0,0.0,0.05,0.05,-0.8334,False,3.0,FCW,STANDBY,3.0,16.667,3.0,3.003003,escalation threshold,3.0
+NCAP-CCRs-70,original,0.0,-0.3859,-0.05,-0.05,0.0,False,3.4,STANDBY,FCW,2.6,19.444,2.6,2.598972,escalation threshold,2.6
+NCAP-CCRs-70,proposed,0.0,0.0,-0.05,0.0,0.0,False,3.0,STANDBY,FCW,3.0,19.444,3.0,3.0,escalation threshold,3.0
+NCAP-CCRs-70,proposed,0.03,0.0,0.0,0.0,0.1915,False,5.33,PARTIAL_BRAKE,FULL_BRAKE,1.30137,12.838,1.301371,1.299611,escalation threshold,1.3
+NCAP-CCRm-30,original,0.0,0.0,-0.05,-0.05,0.1389,False,3.4,STANDBY,FCW,2.6,2.778,2.600002,2.571429,escalation threshold,2.6
+NCAP-CCRm-30,original,0.04,0.0,-0.05,-0.05,0.1389,False,3.39,STANDBY,FCW,2.61,2.778,2.610002,2.589286,escalation threshold,2.6
+NCAP-CCRm-30,proposed,0.0,0.0,-0.05,-0.05,0.1389,False,3.0,STANDBY,FCW,3.0,2.778,3.000002,2.982143,escalation threshold,3.0
+NCAP-CCRm-30,proposed,0.04,0.0,-0.05,0.0,0.0,False,2.99,STANDBY,FCW,3.01,2.778,3.010002,2.982143,escalation threshold,3.0
+NCAP-CCRm-50,original,0.0,0.0,-0.05,-0.05,0.4166,False,3.4,STANDBY,FCW,2.6,8.333,2.6,2.592814,escalation threshold,2.6
+NCAP-CCRm-50,proposed,0.0,0.0,-0.05,-0.05,0.4167,False,3.0,STANDBY,FCW,3.0,8.333,3.0,2.994012,escalation threshold,3.0
+NCAP-CCRm-70,original,0.0,0.0,-0.05,-0.05,0.1451,False,3.4,STANDBY,FCW,2.6,13.889,2.6,2.597122,escalation threshold,2.6
+NCAP-CCRm-70,proposed,0.0,0.0,-0.05,0.0,0.0,False,3.0,STANDBY,FCW,3.0,13.889,3.0,2.996403,escalation threshold,3.0
+NCAP-CCRm-90,original,0.0,0.0,0.05,0.05,-0.1074,False,3.4,FCW,STANDBY,2.6,16.667,2.6,2.603604,escalation threshold,2.6
+NCAP-CCRm-90,proposed,0.0,0.0,0.05,0.05,-0.8334,False,3.0,FCW,STANDBY,3.0,16.667,3.0,3.003003,escalation threshold,3.0
+NCAP-CCRm-100,original,0.0,0.0,0.05,0.05,-0.1074,False,3.4,FCW,STANDBY,2.6,16.667,2.6,2.603604,escalation threshold,2.6
+NCAP-CCRm-100,proposed,0.0,0.0,0.05,0.05,-0.8334,False,3.0,FCW,STANDBY,3.0,16.667,3.0,3.003003,escalation threshold,3.0
+NCAP-CCRm-110,original,0.0,0.0,0.05,0.05,-0.1074,False,3.4,FCW,STANDBY,2.6,16.667,2.6,2.603604,escalation threshold,2.6
+NCAP-CCRm-110,proposed,0.0,0.0,0.05,0.05,-0.8334,False,3.0,FCW,STANDBY,3.0,16.667,3.0,3.003003,escalation threshold,3.0
+NCAP-CCRm-130,original,0.0,0.0,0.05,0.05,-0.1074,False,3.4,FCW,STANDBY,2.6,16.667,2.6,2.603604,escalation threshold,2.6
+NCAP-CCRm-130,proposed,0.0,0.0,0.05,0.05,-0.8334,False,3.0,FCW,STANDBY,3.0,16.667,3.0,3.003003,escalation threshold,3.0
+NCAP-CCRb-30,proposed,0.01,0.0,0.0,0.0,0.0566,False,4.66,PARTIAL_BRAKE,FULL_BRAKE,1.30005,3.032,1.30005,1.295082,escalation threshold,1.3
+NCAP-CCRb-30,proposed,0.03,0.0,0.05,0.0,0.0,False,3.63,FCW,STANDBY,2.99088,2.52,2.990878,3.02,escalation threshold,3.0
+NCAP-CCRb-30,proposed,0.04,0.0,0.0,0.0,-0.0914,False,4.34,FULL_BRAKE,PARTIAL_BRAKE,1.2993,3.821,1.299305,1.302632,escalation threshold,1.3
+NCAP-CCRb-40,original,0.0,0.0,0.0,0.05,-0.2997,False,4.25,PARTIAL_BRAKE,FCW,1.59622,5.0,1.596222,1.6,escalation threshold,1.6
+NCAP-CCRb-40,original,0.02,0.0,0.0,0.0,0.0,False,5.97,FULL_BRAKE,STANDBY,5.95464,0.102,5.954636,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+NCAP-CCRb-40,proposed,0.03,0.0,0.0,0.0,0.1281,False,4.63,PARTIAL_BRAKE,FULL_BRAKE,1.30064,4.692,1.300641,1.297872,escalation threshold,1.3
+NCAP-CCRb-40,proposed,0.04,0.0,0.0,0.0,0.0,False,5.69,FULL_BRAKE,STANDBY,32.25414,0.101,32.254145,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+NCAP-CCRb-60,original,0.0,2.9517,0.0,0.05,0.0,False,4.7,PARTIAL_BRAKE,FCW,1.59998,6.8,1.59998,1.602941,escalation threshold,1.6
+NCAP-CCRb-60,proposed,0.03,0.54,0.0,0.0,0.0,False,5.18,FULL_BRAKE,PARTIAL_BRAKE,1.29927,6.008,1.299269,1.3,escalation threshold,1.3
+NCAP-CCRb-70,original,0.01,-2.0571,0.0,0.0,0.0,False,5.46,PARTIAL_BRAKE,FULL_BRAKE,0.90256,8.427,0.902561,0.899408,escalation threshold,0.9
+NCAP-CCRb-80,original,0.03,0.0,0.05,0.0,0.0,False,4.63,FCW,STANDBY,2.59232,6.52,2.592316,2.6,escalation threshold,2.6
+NCAP-CCRb-80,proposed,0.04,0.0,0.0,0.0,-0.095,False,7.19,FULL_BRAKE,STANDBY,31.06629,0.101,31.066289,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+NCAP-CCRb-90,original,0.04,0.0,0.05,0.0,0.0,False,4.79,FCW,STANDBY,2.59562,7.16,2.59562,2.601399,escalation threshold,2.6
+NCAP-CCRb-90,proposed,0.04,0.0,0.0,0.0,-0.1127,False,7.49,FULL_BRAKE,STANDBY,28.39102,0.101,28.391018,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+NCAP-CCRb-100,proposed,0.02,1.62,0.0,0.0,0.0,False,9.22,FULL_BRAKE,STANDBY,12.78546,0.108,12.785462,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+NCAP-CCRb-100,proposed,0.03,-0.54,0.0,0.05,0.0,False,5.23,PARTIAL_BRAKE,FCW,1.9981,8.92,1.998101,2.0,escalation threshold,2.0
+NCAP-CCRb-100,proposed,0.04,2.16,0.0,0.0,0.0,False,7.79,FULL_BRAKE,STANDBY,25.79037,0.101,25.790366,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+NCAP-CCRb-110,proposed,0.02,0.0,0.0,0.0,-0.0859,False,8.97,FULL_BRAKE,PARTIAL_BRAKE,1.29732,1.521,1.29732,1.3,escalation threshold,1.3
+NCAP-CCRb-110,proposed,0.03,0.0,0.05,0.0,0.0,False,4.93,FCW,STANDBY,2.99197,7.72,2.991974,3.0,escalation threshold,3.0
+NCAP-CCRb-110,proposed,0.04,0.0,0.0,0.0,-0.0464,False,8.09,FULL_BRAKE,STANDBY,19.25507,0.101,19.255068,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+NCAP-CCRb-120,original,0.04,0.0,0.05,0.0,0.0,False,5.24,FCW,STANDBY,2.59924,8.96,2.599238,2.603352,escalation threshold,2.6
+NCAP-CCRb-120,proposed,0.02,0.0,0.0,0.0,0.0,False,10.17,FCW,STANDBY,2.88767,0.362,2.887672,3.0,escalation threshold,3.0
+NCAP-CCRb-120,proposed,0.04,0.0,0.0,0.0,0.2963,False,8.39,FULL_BRAKE,STANDBY,12.64555,0.101,12.645549,,release: closing speed <= MIN_CLOSING_MPS 0.1 m/s (TTC undefined) one frame earlier/later,
+NCAP-CCRb-130,original,0.04,-0.0134,0.0,0.05,0.0,False,5.94,PARTIAL_BRAKE,FCW,1.59967,11.76,1.599673,1.6,escalation threshold,1.6
+NCAP-CCRb-130,proposed,0.0,-1.6202,0.0,0.0,0.0,False,6.4,PARTIAL_BRAKE,FULL_BRAKE,1.30059,10.59,1.300594,1.29717,escalation threshold,1.3

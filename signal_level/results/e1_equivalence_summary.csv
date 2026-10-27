@@ -1,0 +1,6 @@
+mode,protocol,runs,identical_runs,max_abs_dv_kph,contact_flips,r152_verdict_flips,max_abs_dt_brake_s,max_abs_dmin_gap_m,ncap_colour_flips
+transparent,R152,190,190,0.0,,,,,
+transparent,NCAP,300,300,0.0,,,,,
+dbc,R152,190,148,0.0,0,0,0.05,0.8334,0
+dbc,NCAP,300,247,2.9517,0,0,0.05,0.8334,1
+dbc,worst-over-phases,98,95,1.08,,,,,

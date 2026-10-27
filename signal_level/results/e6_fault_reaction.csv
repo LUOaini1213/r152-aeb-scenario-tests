@@ -1,0 +1,11 @@
+id,fault,t_start,duration_s,first_detection,detect_delay_s,t_aeb_fault,telltale_delay_s,telltale_off_after_end_s,brake_lost_s,hold_s,rx_status_aeb_radar,v_rel_impact_kph,fcw_lead_s,ref_v_rel_impact_kph
+F1,RADAR_TGT: 2 frames lost (100 ms),2.0,0.1,none (frame-level only),,,,,0.0,0.0,"{""INITIAL"": 1, ""OK"": 129, ""OKSOMELOST"": 1}",0.0,1.0,0.0
+F2,RADAR_TGT: lost 500 ms (timeout),2.0,0.5,aeb<RADAR_TGT:timeout@2.110,0.11,2.11,0.11,1.2,0.0,0.0,"{""INITIAL"": 1, ""OK"": 120, ""SYNC"": 1, ""WRONGSEQUENCE"": 1}",0.0,0.34,0.0
+F3,EGO_SPEED: lost 500 ms (timeout),2.0,0.5,aeb<EGO_SPEED:timeout@2.050,0.05,2.05,0.05,1.08,0.0,0.0,"{""INITIAL"": 1, ""OK"": 132}",0.0,0.46,0.0
+F4,RADAR_TGT: 1 corrupted frame (CRC),2.0,0.05,none (frame-level only),,,,,0.0,0.0,"{""INITIAL"": 1, ""OK"": 130, ""OKSOMELOST"": 1, ""WRONGCRC"": 1}",0.0,1.0,0.0
+F5,RADAR_TGT: 2 consecutive corrupted frames,2.0,0.1,aeb<RADAR_TGT:e2e@2.050,0.05,2.05,0.05,1.1,0.0,0.0,"{""INITIAL"": 1, ""OK"": 129, ""OKSOMELOST"": 1, ""WRONGCRC"": 2}",0.0,0.84,0.0
+F6,RADAR_TGT: stuck sender (same frame repeated 300 ms),2.0,0.3,aeb<RADAR_TGT:e2e@2.050,0.05,2.05,0.05,1.1,0.0,0.0,"{""INITIAL"": 1, ""OK"": 125, ""OKSOMELOST"": 1, ""REPEATED"": 6}",0.0,0.64,0.0
+F7,AEB_CMD: AEB ECU bus-off 300 ms during braking,4.25,0.3,brake<AEB_CMD:timeout@4.270 hmi<AEB_CMD:timeout@4.270,0.02,,0.022,0.02,0.298,0.0,"{""INITIAL"": 1, ""OK"": 138}",0.0,1.0,0.0
+F8,bus-wide burst 200 ms before braking,2.0,0.2,aeb<RADAR_TGT:timeout@2.110 aeb<EGO_SPEED:timeout@2.050 brake<AEB_CMD:timeout@2.020 hmi<AEB_CMD:timeout@2.020,0.02,2.05,0.022,1.2,0.0,0.0,"{""INITIAL"": 1, ""OK"": 126, ""SYNC"": 1, ""WRONGSEQUENCE"": 1}",0.0,0.64,0.0
+F9,bus-wide burst 200 ms during braking (baseline),4.25,0.2,aeb<RADAR_TGT:timeout@4.360 aeb<EGO_SPEED:timeout@4.310 brake<AEB_CMD:timeout@4.270 hmi<AEB_CMD:timeout@4.270,0.02,4.3100000000000005,0.022,1.2,0.038,0.0,"{""INITIAL"": 1, ""OK"": 120, ""SYNC"": 1, ""WRONGSEQUENCE"": 1}",19.8,1.0,0.0
+F10,bus-wide burst 200 ms during braking (hold variant H),4.25,0.2,aeb<RADAR_TGT:timeout@4.360 aeb<EGO_SPEED:timeout@4.310 brake<AEB_CMD:timeout@4.270 hmi<AEB_CMD:timeout@4.270,0.02,4.3100000000000005,0.022,1.2,0.0,1.828,"{""INITIAL"": 1, ""OK"": 126, ""SYNC"": 1, ""WRONGSEQUENCE"": 1}",0.0,1.0,0.0

@@ -1,0 +1,73 @@
+config,case_id,runs,v_rel_impact_worst_kph,v_rel_impact_best_kph,verdict
+original,R152-S20,20,0.0,0.0,0/20 failed
+original,R152-S40,20,0.0,0.0,0/20 failed
+original,R152-S42,20,0.0,0.0,0/20 failed
+original,R152-S60,20,5.23,0.0,0/20 failed
+original,R152-M30,20,0.0,0.0,0/20 failed
+original,R152-M60,20,0.0,0.0,0/20 failed
+original,NCAP-CCRs-10,20,0.0,0.0,green
+original,NCAP-CCRs-20,20,0.0,0.0,green
+original,NCAP-CCRs-30,20,0.0,0.0,green
+original,NCAP-CCRs-40,20,0.0,0.0,green
+original,NCAP-CCRs-50,20,0.0,0.0,green
+original,NCAP-CCRs-60,20,5.23,0.0,yellow
+original,NCAP-CCRs-70,20,27.51,23.02,brown
+original,NCAP-CCRs-80,20,39.64,36.48,red
+original,NCAP-CCRm-30,20,0.0,0.0,green
+original,NCAP-CCRm-40,20,0.0,0.0,green
+original,NCAP-CCRm-50,20,0.0,0.0,green
+original,NCAP-CCRm-60,20,0.0,0.0,green
+original,NCAP-CCRm-70,20,0.0,0.0,green
+original,NCAP-CCRm-80,20,5.23,0.0,yellow
+original,NCAP-CCRm-90,20,5.23,0.0,yellow
+original,NCAP-CCRm-100,20,5.23,0.0,yellow
+original,NCAP-CCRm-110,20,5.23,0.0,yellow
+original,NCAP-CCRm-120,20,5.23,0.0,yellow
+original,NCAP-CCRm-130,20,5.23,0.0,yellow
+original,NCAP-CCRb-30,20,0.0,0.0,green
+original,NCAP-CCRb-40,20,0.0,0.0,green
+original,NCAP-CCRb-50,20,6.02,0.0,yellow
+original,NCAP-CCRb-60,20,11.47,6.32,orange
+original,NCAP-CCRb-70,20,15.52,11.29,orange
+original,NCAP-CCRb-80,20,18.54,15.21,orange
+original,NCAP-CCRb-90,20,22.03,18.81,brown
+original,NCAP-CCRb-100,20,24.83,22.17,brown
+original,NCAP-CCRb-110,20,27.14,24.86,brown
+original,NCAP-CCRb-120,20,29.94,27.78,brown
+original,NCAP-CCRb-130,20,32.16,29.79,red
+proposed,R152-S20,20,0.0,0.0,0/20 failed
+proposed,R152-S40,20,0.0,0.0,0/20 failed
+proposed,R152-S42,20,0.0,0.0,0/20 failed
+proposed,R152-S60,20,0.0,0.0,0/20 failed
+proposed,R152-M30,20,0.0,0.0,0/20 failed
+proposed,R152-M60,20,0.0,0.0,0/20 failed
+proposed,NCAP-CCRs-10,20,0.0,0.0,green
+proposed,NCAP-CCRs-20,20,0.0,0.0,green
+proposed,NCAP-CCRs-30,20,0.0,0.0,green
+proposed,NCAP-CCRs-40,20,0.0,0.0,green
+proposed,NCAP-CCRs-50,20,0.0,0.0,green
+proposed,NCAP-CCRs-60,20,0.0,0.0,green
+proposed,NCAP-CCRs-70,20,0.0,0.0,green
+proposed,NCAP-CCRs-80,20,0.0,0.0,green
+proposed,NCAP-CCRm-30,20,0.0,0.0,green
+proposed,NCAP-CCRm-40,20,0.0,0.0,green
+proposed,NCAP-CCRm-50,20,0.0,0.0,green
+proposed,NCAP-CCRm-60,20,0.0,0.0,green
+proposed,NCAP-CCRm-70,20,0.0,0.0,green
+proposed,NCAP-CCRm-80,20,0.0,0.0,green
+proposed,NCAP-CCRm-90,20,0.0,0.0,green
+proposed,NCAP-CCRm-100,20,0.0,0.0,green
+proposed,NCAP-CCRm-110,20,0.0,0.0,green
+proposed,NCAP-CCRm-120,20,0.0,0.0,green
+proposed,NCAP-CCRm-130,20,0.0,0.0,green
+proposed,NCAP-CCRb-30,20,0.0,0.0,green
+proposed,NCAP-CCRb-40,20,0.0,0.0,green
+proposed,NCAP-CCRb-50,20,0.0,0.0,green
+proposed,NCAP-CCRb-60,20,0.0,0.0,green
+proposed,NCAP-CCRb-70,20,0.0,0.0,green
+proposed,NCAP-CCRb-80,20,0.0,0.0,green
+proposed,NCAP-CCRb-90,20,0.0,0.0,green
+proposed,NCAP-CCRb-100,20,0.0,0.0,green
+proposed,NCAP-CCRb-110,20,0.0,0.0,green
+proposed,NCAP-CCRb-120,20,0.0,0.0,green
+proposed,NCAP-CCRb-130,20,0.0,0.0,green
