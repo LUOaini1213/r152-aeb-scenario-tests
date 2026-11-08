@@ -142,11 +142,18 @@ def test_ghost_target_original_vs_proposed():
     assert p.max_decel_req == 6.0 and 60.0 - p.v_min_kph > 9.0          # proposed brakes on it
 
 
-def test_traceability_complete():
+def test_traceability_complete(tmp_path):
+    """Completeness in both directions, and the committed traceability files are up to date.
+    Writes only into tmp_path - tracked files are never touched by the test run."""
     import importlib.util
-    if not (SCEN_DIR.parent / "results" / "r152_results.csv").exists():
+    root = SCEN_DIR.parent
+    if not (root / "results" / "r152_results.csv").exists():
         pytest.skip("run scripts/run_all.py and scripts/run_deepening.py first")
-    spec = importlib.util.spec_from_file_location("mt", SCEN_DIR.parent / "scripts" / "make_traceability.py")
+    spec = importlib.util.spec_from_file_location("mt", root / "scripts" / "make_traceability.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    assert mod.main() == 0
+    assert mod.main(tmp_path / "traceability.csv", tmp_path / "traceability_summary.md") == 0
+    for new, committed in ((tmp_path / "traceability.csv", root / "traceability.csv"),
+                           (tmp_path / "traceability_summary.md", root / "results" / "traceability_summary.md")):
+        norm = lambda p: p.read_bytes().replace(b"\r\n", b"\n")   # noqa: E731
+        assert norm(new) == norm(committed), f"{committed.name} is stale: run python -I scripts/make_traceability.py"

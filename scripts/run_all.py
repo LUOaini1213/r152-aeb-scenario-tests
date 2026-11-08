@@ -59,13 +59,27 @@ def late_contacts(runs) -> dict:
             "cases": sorted({r.case_id for r in late})}
 
 
+def committed_backend() -> str | None:
+    """Backend recorded in the existing results/summary.json (None if there is none)."""
+    try:
+        return json.loads((RES / "summary.json").read_text(encoding="utf-8")).get("backend")
+    except (OSError, ValueError):
+        return None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--esmini-lib")
     ap.add_argument("--backend", default="esmini", choices=["esmini", "python"])
     ap.add_argument("--workers", type=int, default=10)
+    ap.add_argument("--overwrite-esmini-results", action="store_true",
+                    help="allow a --backend python run to overwrite results/ that were produced with esmini")
     a = ap.parse_args()
     kind, lib, W = a.backend, a.esmini_lib, a.workers
+    if kind == "python" and not a.overwrite_esmini_results and committed_backend() == "esmini":
+        sys.exit("results/summary.json was produced with esmini; a --backend python run would replace those results "
+                 "(results/esmini_logs/ is kept). Re-run with --overwrite-esmini-results, then `git checkout -- "
+                 "results traceability.csv` to restore the committed esmini results.")
     t_start = time.time()
     all_ids = [p.case_id for p in regulatory_points()]
     off_ids = [p.case_id for p in r152_points(sweep=False)]
@@ -73,7 +87,7 @@ def main():
     summary = {"backend": kind, "dt_s": DT, "phases_s": PHASES, "configs": {n: asdict(c) for n, c in CONFIGS.items()}}
 
     # ---------------------------------------------------------------- A main matrix
-    if (RES / "esmini_logs").exists():
+    if kind == "esmini" and (RES / "esmini_logs").exists():   # only an esmini run regenerates its own logs
         shutil.rmtree(RES / "esmini_logs")
     main_sum, main_runs = {}, {}
     for name, aeb in CONFIGS.items():

@@ -25,7 +25,7 @@
 
 - **问题**：一个已经能在 CAN 仿真里工作的 AEB 状态机，放到法规试验场景里，按官方条款逐条判定，能不能过？不过的话，是哪个参数、什么条件下不过？改了之后又会带来什么新问题？
 - **范围**：M1 车辆的车对车追尾（静止目标、匀速移动目标、前车制动）。只做一维纵向；行人、两轮车、交叉路口、横向偏置都不在范围内。
-- **复用的对象**：`vendor/canbus_analyzer_aeb/` 下的上游代码，SHA-256 和 git blob 与上游提交 `27da004` 一致（`scripts/check_vendor.py` 检查）。P5 只改配置参数，不改状态机代码。
+- **复用的对象**：`vendor/canbus_analyzer_aeb/` 下的上游代码，SHA-256 和 git blob 与上游提交 `27da004` 一致（`scripts/check_vendor.py` 检查）。本项目只改配置参数，不改状态机代码。
 
 ## 2 要求来源（只用官方文本）
 
@@ -65,10 +65,10 @@ esmini（OpenSCENARIO 场景，固定步长 2 ms，ExternalController 接管自�
 
 ### 3.4 可信度检查
 
-- 纯 Python 后端与 esmini 在 490 次运行中结果一致。
-- 步长 1 ms 与 2 ms 相比，最差碰撞速度最多差 0.6 km/h。
+- 纯 Python 后端与 esmini 在 490 次运行中状态序列、是否碰撞、碰撞速度（差 < 1e-6 km/h）都一致；这项检查不比较时刻，最小车距在 R152-S45 一处差 0.625 m（TTC 恰好落在阈值上，预警差一帧）。数据：`results/summary.json` 的 `crosscheck_esmini_vs_python`（由 `scripts/run_all.py` B 段生成）。
+- 步长 1 ms 与 2 ms 相比，最差碰撞速度最多差 0.6 km/h（`results/summary.json` 的 `dt_check`）。
 - CCRs 70 / 80 km/h 的碰撞速度与上游仓库（CAN 总线仿真）一致。
-- 单元测试 14 项（没有 esmini 时 13 项通过、1 项跳过）；信号级另有 39 项（第 10 节）。
+- `tests/` 单元测试（含 `tests/test_readme_numbers.py`：README 首屏数字逐项对照提交的结果文件；esmini 一项在没有 `ESMINI_LIB` 时跳过）；信号级另有 39 项（第 10 节）。
 
 ## 4 基线结果：原参数 vs 新参数
 
@@ -108,14 +108,14 @@ esmini（OpenSCENARIO 场景，固定步长 2 ms，ExternalController 接管自�
 
 ### 5.2 参数搜索
 
-选择规则在运行之前写进 `scripts/param_search.py` 的文档字符串，只改 `AebConfig` 的数值：
+选择规则写在 `scripts/param_search.py` 的文档字符串和确定性函数 `select()` 里，只改 `AebConfig` 的数值（仓库只有一次提交，历史本身无法证明规则先于运行写定；可核对的是：用提交的 `results/param_search.csv` 复算 `select()` 得到的就是新参数，见 `tests/test_readme_numbers.py`）：
 
 - **候选**：部分制动 ∈ {5, 6} m/s²；部分制动 TTC ∈ {1.6, 1.8, 2.0} s，预警 TTC = 部分制动 TTC + 1.0 s（保持原来 1.0 s 的预警提前量）；全力制动 TTC ∈ {0.9, 1.1, 1.3, 1.5} s。
 - **约束**：在基线和最差压力组合（时延 0.2 s + τ 0.4 s）下，R152 六个官方点在每个采样相位都通过（碰撞速度、预警提前量、制动需求）。
 - **目标**：Euro NCAP 标准范围简化估计（最差相位）在基线和中等压力（0.1 s，τ 0.25 s）两种条件下的合计最高。
 - **平局**：选介入更晚的一组（先比部分制动 TTC，再比全力制动 TTC），因为更早制动在真实交通中会带来误作用，而仿真量不出来。
 
-结果：TTC 预警 / 部分 / 全力制动 3.0 / 2.0 / 1.3 s，部分制动 6 m/s²，其余不变。
+结果：目标值 10.40 在 pd5_pb2_fb1.5、pd6_pb2_fb1.3、pd6_pb2_fb1.5 三组上并列，平局规则（部分制动 TTC 相同，比全力制动 TTC 取更小）选出 TTC 预警 / 部分 / 全力制动 3.0 / 2.0 / 1.3 s，部分制动 6 m/s²，其余不变。
 
 ### 5.3 验证中发现的新问题：规程结束之后的二次接触
 
@@ -227,7 +227,7 @@ ISO 26262 正文是付费标准，本项目没有查阅原文；S / E / C 等级
 |---|---|---|---|
 | SG1 无碰撞风险时不触发紧急制动，或把误制动限制在可控范围 | H2 | C | 幻影目标试验：新参数和摩擦自适应参数都会误制动（8.1），与 SG2 冲突 |
 | SG2 在 ODD 内及时预警并提供足够制动 | H1 | B | R152 / NCAP 结果（第 4–7 节） |
-| SG3 驾驶员明确接管时及时中断 AEB 制动 | H3 | A | P5 未验证；上游只有加速踏板超越，没有转向超越 |
+| SG3 驾驶员明确接管时及时中断 AEB 制动 | H3 | A | 本项目未验证；上游只有加速踏板超越，没有转向超越 |
 | SG4 目标减速或停止时不在本车停住前过早释放制动 | H4 | QM | 新参数不满足（18 次二次接触） |
 
 **要点**：参数修改改善了 SG2，却在 SG1 上付出代价。两者只能在架构层面分配（确认后再重制动、限制未确认目标的制动权限），不能只靠调阈值。
@@ -368,7 +368,7 @@ U + 新参数在 100 ms 突发、偏移 0 时，30 个组合中 20 个超限，�
 - 链路：法规 / 规程条款 → 功能需求 ID → 复用功能的信号 → OpenSCENARIO 用例 ID → 结果。
 - `traceability.csv` 共 758 行，由 `scripts/make_traceability.py` 从结果文件生成；需求定义在 `aebtest/requirements.py`。
 - 信号列用的是上游 AEB 所用的 opendbc Toyota DBC 报文：输入 LEAD_INFO（0x2E6）、SPEED（0xB4）、GAS_PEDAL、BRAKE_MODULE；输出 PRE_COLLISION（0x283）、PCS_HUD（0x411）。
-- 完整性检查（脚本退出码，也在单元测试里）：前向，每条需求都有测试，或写明 P5 未验证的理由；后向，每个 OpenSCENARIO 用例至少追溯到一条需求。各需求的判定计数见 `results/traceability_summary.md`。
+- 完整性检查（脚本退出码，也在单元测试里）：前向，每条需求都有测试，或写明本项目未验证的理由；后向，每个 OpenSCENARIO 用例至少追溯到一条需求。各需求的判定计数见 `results/traceability_summary.md`。
 
 ## 12 局限
 
@@ -382,14 +382,14 @@ U + 新参数在 100 ms 突发、偏移 0 时，30 个组合中 20 个超限，�
 
 ## 13 复现
 
-环境：Python 3.13，matplotlib（画图），pytest（测试），esmini v3.10.2 官方二进制（可选）。
+环境：Python 3.11 及以上（作者用 3.13，CI 用 3.11），matplotlib（画图），pytest（测试），esmini v3.10.2 官方二进制（可选）。
 
 ```bash
 python -I scripts/check_vendor.py        # 复用代码与上游一致
 python -I scripts/make_scenarios.py      # 生成 6 个网格文件
 # 有 esmini 时加 --esmini-lib <esminiLib 路径>；没有时加 --backend python
 python -I scripts/param_search.py   --backend python --workers 8
-python -I scripts/run_all.py        --backend python --workers 8
+python -I scripts/run_all.py        --backend python --overwrite-esmini-results --workers 8   # 覆盖提交的 esmini 结果，git checkout -- results traceability.csv 可恢复
 python -I scripts/run_deepening.py  --backend python --workers 8
 python -I scripts/make_traceability.py
 python -I scripts/make_tables_deepening.py

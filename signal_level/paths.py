@@ -1,19 +1,19 @@
-"""Project-relative paths (pathlib only, no absolute paths) and the import bootstrap for P5's aebtest."""
+"""Project-relative paths (pathlib only, no absolute paths) and the import bootstrap for aebtest."""
 from __future__ import annotations
 
 import sys
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent          # .../P5_AEB法规场景测试/signal_level
-P5_ROOT = HERE.parent                           # .../P5_AEB法规场景测试
+HERE = Path(__file__).resolve().parent          # <repo>/signal_level
+REPO_ROOT = HERE.parent                         # <repo>
 DBC_PATH = HERE / "aeb_demo.dbc"
 RESULTS = HERE / "results"
-VENDOR_FILE = P5_ROOT / "vendor" / "canbus_analyzer_aeb" / "aeb_function.py"
+VENDOR_FILE = REPO_ROOT / "vendor" / "canbus_analyzer_aeb" / "aeb_function.py"
 
 
 def bootstrap() -> None:
-    """Make ``aebtest`` (P5) and ``signal_level`` importable without writing bytecode into P5's folders."""
+    """Make ``aebtest`` and ``signal_level`` importable without writing bytecode into the repo."""
     sys.dont_write_bytecode = True
-    root = str(P5_ROOT)
+    root = str(REPO_ROOT)
     if root not in sys.path:
         sys.path.insert(0, root)

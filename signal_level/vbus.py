@@ -3,7 +3,7 @@
 Not a physical CAN model: no arbitration, no bit timing, no error frames.  A frame sent at t_tx is
 delivered to every subscriber of its message at t_rx = t_tx + latency + U(0, jitter), never before an
 earlier frame of the same message (FIFO per ID).  The closed loop calls ``deliver(t)`` every plant step,
-so delivery is quantized to the step (2 ms in P5).
+so delivery is quantized to the step (2 ms in the main loop).
 
 Faults (all optional, all deterministic for a given seed):
   loss         i.i.d. Bernoulli loss per frame.  The same seed gives nested loss sets for increasing

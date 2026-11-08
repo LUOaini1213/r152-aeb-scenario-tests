@@ -1,5 +1,10 @@
 # AEB 法规场景测试：把已有 AEB 功能放进 UN R152 / Euro NCAP 场景
 
+**In English.** Closed-loop UN R152 and Euro NCAP CCR rear-end scenario tests (OpenSCENARIO / esmini, or a pure-Python backend) for the unchanged AEB state machine of my [can-bus-analyzer](https://github.com/LUOaini1213/can-bus-analyzer).
+Findings in this toy 1-D model: the upstream defaults meet the R152 impact-speed limits but not the literal 5 m/s² braking-demand requirement (12 of 19 points); a 4-value parameter change raises the simplified Euro NCAP estimate from 4.17 to 5.20 (of 5.2) but adds 18 of 245 low-speed contacts after the NCAP end condition (max 8.0 km/h) and turns a 1-frame phantom target into a 6 m/s² false brake.
+A CAN signal-level layer (DBC, E2E, timeouts, fault-injecting bus) shows a 100 ms burst pushes 30 of 330 runs over the limit with the new values.
+Limits: simulation only, idealised sensor / brake / road models, NCAP numbers are a simplified estimate, no compliance claim. Every number below is pinned to a committed CSV / JSON by `tests/test_readme_numbers.py`.
+
 把我自己仓库 [can-bus-analyzer](https://github.com/LUOaini1213/can-bus-analyzer)（提交 `27da004`）里的 AEB 状态机**原样复用**，放进 esmini（OpenSCENARIO / OpenDRIVE）里跑 UN R152 和 Euro NCAP 2026 的追尾场景（CCRs / CCRm / CCRb）。依次做了判定、找失效点、改参数、再验证；深化部分做了湿滑路面、示意性 HARA、SOTIF 触发条件和需求追溯矩阵。
 
 > 本项目在 AI 编码助手（Claude）辅助下完成。阈值和模型参数都是项目假设，结论只在本模型内成立；**不声称**任何功能符合 R152 或 Euro NCAP。完整说明见 [report.md](report.md)。
@@ -20,7 +25,9 @@
 | 湿路 μ = 0.5 的简化估计（模型内） | 1.98 | 4.17（摩擦自适应参数 5.07） |
 | 雨天量程 40 m 时的 R152 预警提前量 | S60 恰好 0.80 s | S60 / S55 不足（0.4 / 0.6 s） |
 
-**新参数**只改了 `AebConfig` 的 4 个值：TTC 预警 / 部分 / 全力制动 2.6 / 1.6 / 0.9 s → 3.0 / 2.0 / 1.3 s，部分制动 4 → 6 m/s²。选择规则在跑之前写进了 `scripts/param_search.py`。
+![R152 官方点最差碰撞速度：原参数 vs 新参数](results/plots/fig1_r152_impact.png)
+
+**新参数**只改了 `AebConfig` 的 4 个值：TTC 预警 / 部分 / 全力制动 2.6 / 1.6 / 0.9 s → 3.0 / 2.0 / 1.3 s，部分制动 4 → 6 m/s²。选择规则是 `scripts/param_search.py` 里的确定性函数 `select()`：目标值在 3 组候选上并列 10.40，按“介入更晚”的平局规则选出这一组；`tests/test_readme_numbers.py` 用提交的 `results/param_search.csv` 复算，结果必须等于新参数。
 
 **更保守的备选**：只把部分制动 4 → 5 m/s²，就能补上 R152 的字面缺口和压力角超限，且没有二次接触（NCAP 估计 4.64）。
 
@@ -47,11 +54,11 @@
   - esmini v3.10.2 通过 `esminiLib.dll`（ctypes）无界面运行，固定步长 2 ms；
   - 自车交给 ExternalController，由 Python 中的雷达模型 → 上游状态机 → 一阶制动执行器 → 纵向模型闭环控制。
 - **可信度**：
-  - 纯 Python 后端与 esmini 在 490 次运行中结果一致；
-  - 1 ms 与 2 ms 步长相比最差碰撞速度最多差 0.6 km/h；
+  - 纯 Python 后端与 esmini 在 490 次运行中状态序列、是否碰撞、碰撞速度（差 < 1e-6 km/h）都一致；不比较时刻，最小车距在 R152-S45 一处差 0.625 m（TTC 恰好落在阈值上，预警差一帧）。数据见 `results/summary.json` 的 `crosscheck_esmini_vs_python`；
+  - 1 ms 与 2 ms 步长相比最差碰撞速度最多差 0.6 km/h（`results/summary.json` 的 `dt_check`）；
   - CCRs 70 / 80 km/h 的碰撞速度与上游仓库（CAN 总线仿真）一致；
   - 复用代码的 SHA-256 / git blob 与上游一致；
-  - 14 项单元测试通过（没有 esmini 时 13 项通过、1 项跳过）；信号级另有 39 项。
+  - `tests/` 单元测试全部通过（esmini 一项在没有 `ESMINI_LIB` 时跳过），其中 `tests/test_readme_numbers.py` 把本页数字逐项对照提交的结果文件；信号级另有 39 项；GitHub Actions 在 Ubuntu 和 Windows 上跑。
 
 ## 复现
 
@@ -59,18 +66,18 @@
 # 有 esmini 时把 --backend python 换成 --esmini-lib <esminiLib.dll / libesminiLib.so 的路径>
 python -I scripts/check_vendor.py; python -I scripts/make_scenarios.py
 python -I scripts/param_search.py --backend python --workers 8
-python -I scripts/run_all.py --backend python --workers 8
+python -I scripts/run_all.py --backend python --overwrite-esmini-results --workers 8
 python -I scripts/run_deepening.py --backend python --workers 8
 python -I scripts/make_traceability.py; python -I scripts/make_tables_deepening.py
 python -I scripts/make_plots.py
-python -I -m pytest -q tests                                              # 设置 ESMINI_LIB 时 14 项全跑，否则 1 项跳过
+python -I -m pytest -q tests                                              # 没有设置 ESMINI_LIB 时 esmini 一项跳过
 python -B -I -m pytest -q signal_level/tests -c signal_level/pytest.ini   # 信号级 39 项
 python -B -I signal_level/run_signal_level.py --workers 4                 # 信号级实验，约 22 分钟
 ```
 
-- 没有 esmini 时加 `--backend python`。
+- 没有 esmini 时加 `--backend python`。提交的 `results/` 来自 esmini；`run_all.py` 用 Python 后端时要加 `--overwrite-esmini-results` 才会覆盖（`results/esmini_logs/` 始终保留），重跑后表 1–8 与提交版一致，但 R152-S45 等阈值恰好相等的点上最小车距 / 时刻会有一帧差异。用 `git checkout -- results traceability.csv` 恢复提交版。
 - esmini 打不开含中文的绝对路径，脚本会自动以 `scenarios/` 为工作目录、用相对路径调用它。
-- 依赖：Python 3.13、matplotlib（画图）、pytest（测试），见 `requirements.txt`。esmini v3.10.2 官方二进制（MPL-2.0，[esmini/esmini](https://github.com/esmini/esmini) releases）可选，不包含在本仓库里。
+- 依赖：Python 3.11 及以上（作者用 3.13，CI 在 Ubuntu / Windows 上用 3.11）、matplotlib（画图）、pytest（测试），见 `requirements.txt`。esmini v3.10.2 官方二进制（MPL-2.0，[esmini/esmini](https://github.com/esmini/esmini) releases）可选，不包含在本仓库里。
 
 ## 文件
 

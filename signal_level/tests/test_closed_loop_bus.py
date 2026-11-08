@@ -1,10 +1,10 @@
-"""Closed loop through the bus: equivalence with P5's direct loop, fault reactions, E2E in the loop."""
+"""Closed loop through the bus: equivalence with the main loop's direct loop, fault reactions, E2E in the loop."""
 import hashlib
 import importlib.util
 
 import pytest
 
-from signal_level.paths import P5_ROOT, VENDOR_FILE
+from signal_level.paths import REPO_ROOT, VENDOR_FILE
 from signal_level.sl_experiments import E2E_BITS, OFFICIAL, Job, run_job
 from signal_level.sl_loop import BusSetup
 from signal_level.supervision import RxConfig
@@ -15,7 +15,7 @@ SAME = ("contact", "v_rel_impact_kph", "t_fcw", "t_brake", "t_full", "max_decel_
 
 
 def test_vendored_state_machine_is_unchanged():
-    spec = importlib.util.spec_from_file_location("check_vendor", P5_ROOT / "scripts" / "check_vendor.py")
+    spec = importlib.util.spec_from_file_location("check_vendor", REPO_ROOT / "scripts" / "check_vendor.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     assert mod.main() == 0

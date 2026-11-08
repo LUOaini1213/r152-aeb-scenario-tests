@@ -63,7 +63,7 @@ def ref_encode(signals_raw, dlc):
 
 # ------------------------------------------------------------------------------------------- parsing
 def test_parse_demo_dbc():
-    assert DB.version.startswith("P5-signal-level")
+    assert DB.version.startswith("AEB-signal-level")
     assert DB.nodes == ["RADAR", "ESC", "AEB_ECU", "BRAKE_ECU", "HMI"]
     assert [(m.name, m.frame_id, m.length, m.sender) for m in DB.messages] == [
         ("AEB_CMD", 0xA0, 8, "AEB_ECU"), ("EGO_SPEED", 0xB0, 8, "ESC"), ("RADAR_TGT", 0x120, 8, "RADAR")]
