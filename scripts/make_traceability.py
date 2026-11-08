@@ -37,7 +37,10 @@ def row(req, case_id, config, condition, result, verdict, note=""):
             "result": result, "verdict": verdict, "note": note}
 
 
-def main() -> int:
+def main(trace_csv: Path | None = None, summary_md: Path | None = None) -> int:
+    """Write traceability.csv and results/traceability_summary.md (or the given paths, e.g. a temp dir in tests)."""
+    trace_csv = trace_csv or ROOT / "traceability.csv"
+    summary_md = summary_md or RES / "traceability_summary.md"
     r152, ncap = load("r152_results.csv"), load("ncap_results.csv")
     wet, ghost, rng = load("wet_results.csv"), load("sotif_ghost.csv"), load("sotif_range.csv")
     rows = []
@@ -126,7 +129,7 @@ def main() -> int:
                                 f"{'误制动 ' + r['max_decel_request_mps2'] + ' m/s²，速度损失 ' + r['speed_loss_kph'] + ' km/h' if brake else ('仅误报警' if r['fcw'] == 'True' else '无反应')}",
                                 "不通过（误制动）" if brake else ("通过（仅预警）" if r["fcw"] == "True" else "通过")))
         elif req.na_reason:
-            rows.append(row(req, "-", "-", "-", "P5 未验证", "N/A", req.na_reason))
+            rows.append(row(req, "-", "-", "-", "本项目未验证", "N/A", req.na_reason))
 
     # ---- completeness checks
     problems = []
@@ -141,8 +144,8 @@ def main() -> int:
         if cid not in case_ids:
             problems.append(f"backward: test case {cid} (grid {GRID[cid][0]}) traces to no requirement")
     keys = list(rows[0])
-    with open(ROOT / "traceability.csv", "w", newline="", encoding="utf-8-sig") as f:
-        w = csv.DictWriter(f, fieldnames=keys)
+    with open(trace_csv, "w", newline="", encoding="utf-8-sig") as f:
+        w = csv.DictWriter(f, fieldnames=keys, lineterminator="\n")
         w.writeheader()
         w.writerows(rows)
 
@@ -162,7 +165,7 @@ def main() -> int:
                  f"{0 if cases == ['-'] else len(cases)} | {'；'.join(parts)} |")
     L += ["", f"完整性检查：{'通过（每条需求都有测试或 N/A 理由，每个测试用例都能追溯到需求）' if not problems else '；'.join(problems)}",
           f"总行数 {len(rows)}；OpenSCENARIO 用例 {len(GRID)} 个（含 SOTIF 自由路 2 个），条件变体用 @ 后缀区分。"]
-    (RES / "traceability_summary.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+    summary_md.write_bytes(("\n".join(L) + "\n").encode("utf-8"))   # LF on every OS
     print(f"{len(rows)} rows, {len(REQS)} requirements, {len(GRID)} OpenSCENARIO cases; problems: {problems or 'none'}")
     return 1 if problems else 0
 

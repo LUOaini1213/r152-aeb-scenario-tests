@@ -1,26 +1,26 @@
-# P5 信号级深化：DBC / E2E / 超时降级 / 总线故障下的 R152 回放
+# 信号级深化：DBC / E2E / 超时降级 / 总线故障下的 R152 回放
 
 > **个人项目，使用 AI 工具辅助完成**（Claude）。所有报文 ID、周期、信号分辨率、超时与恢复参数都是**设计假设**，不来自任何主机厂、供应商或标准；所有结果都是玩具模型的仿真数据（**SYNTHETIC**）。本目录**不声称**符合 UN R152 或 AUTOSAR。
 
 ## 1 做了什么、为什么
 
-P5 把上游 AEB 状态机放进 UN R152 车对车场景时，雷达距离、相对速度、车速都是**浮点数直连**进状态机的。真车上它们是 CAN 帧：要按 DBC 量化，会丢帧、延迟、被破坏，接收端还要做 E2E 校验和超时监控，并决定什么时候降级。本目录把 P5 的同一套 R152 闭环**下沉到信号级**重跑，回答三个问题：
+主闭环把上游 AEB 状态机放进 UN R152 车对车场景时，雷达距离、相对速度、车速都是**浮点数直连**进状态机的。真车上它们是 CAN 帧：要按 DBC 量化，会丢帧、延迟、被破坏，接收端还要做 E2E 校验和超时监控，并决定什么时候降级。本目录把主闭环的同一套 R152 闭环**下沉到信号级**重跑，回答三个问题：
 
-1. 无故障的总线能不能复现 P5 的结果？不同之处能不能全部用信号量化解释？
+1. 无故障的总线能不能复现主闭环的结果？不同之处能不能全部用信号量化解释？
 2. 丢帧、关键时刻的突发丢帧、附加时延会不会让 R152 判定翻转？差多少？
 3. E2E（CRC + 计数器）到底挡住了什么？没有它，一帧坏数据会造成什么后果？
 
 闭环结构（每 2 ms 一步，全部在一个 Python 进程内）：
 
 ```
-P5 RadarModel ─► RADAR 节点：DBC 编码 + E2E ─┐                         ┌─► BRAKE ECU：E2E + 超时 ─► P5 制动执行器 ─► P5 纵向模型
-P5 车速        ─► ESC 节点：DBC 编码 + E2E ──┼─► 虚拟总线（时延/抖动/ ──┤
+主闭环 RadarModel ─► RADAR 节点：DBC 编码 + E2E ─┐                         ┌─► BRAKE ECU：E2E + 超时 ─► 主闭环制动执行器 ─► 主闭环纵向模型
+主闭环车速        ─► ESC 节点：DBC 编码 + E2E ──┼─► 虚拟总线（时延/抖动/ ──┤
                                              │   丢帧/突发/比特翻转/    └─► HMI：预警显示 + 失效报警灯
                  AEB ECU：E2E + 可信性 + 超时 ◄┘   bus-off/发送方卡死）
                  → 上游 analyzer.ttc() → 上游 StateMachine（原样复用）→ AEB_CMD 帧 ─► 总线
 ```
 
-被测状态机就是 P5 用的 `vendor/canbus_analyzer_aeb/aeb_function.py`（与 LUOaini1213/can-bus-analyzer @27da004 字节一致），通过 P5 的 `aebtest/aeb_loader.py` 导入，**一行未改**（测试里核对 SHA-256）。上游自带的 CAN 外壳（`AebEcu` / `Supervisor`）依赖 cantools 和 opendbc 的 Toyota DBC，本机不能装，所以由本目录的 `ecus.py` 替代，只替代外壳，状态机本体不动。
+被测状态机就是主闭环用的 `vendor/canbus_analyzer_aeb/aeb_function.py`（与 LUOaini1213/can-bus-analyzer @27da004 字节一致），通过主闭环的 `aebtest/aeb_loader.py` 导入，**一行未改**（测试里核对 SHA-256）。上游自带的 CAN 外壳（`AebEcu` / `Supervisor`）依赖 cantools 和 opendbc 的 Toyota DBC，本机不能装，所以由本目录的 `ecus.py` 替代，只替代外壳，状态机本体不动。
 
 ## 2 设计
 
@@ -28,12 +28,12 @@ P5 车速        ─► ESC 节点：DBC 编码 + E2E ──┼─► 虚拟总�
 
 | 报文 | ID | 发送方 → 接收方 | 周期（设计假设） | 字节序 | 信号（分辨率、范围均为设计假设） |
 |---|---|---|---|---|---|
-| RADAR_TGT | 0x120 | RADAR → AEB_ECU | 50 ms（= P5 雷达更新周期） | Motorola | TgtDist 13 bit，0.05 m，0–409.55 m；TgtRelSpd 12 bit 有符号，0.05 m/s，−70–70 m/s；TgtValid 1 bit；TgtQuality 2 bit；计数器 4 bit；CRC 8 bit |
-| EGO_SPEED | 0x0B0 | ESC → AEB_ECU | 20 ms（= P5 车速采样周期） | Intel | VehSpd 16 bit，0.01 km/h，0–300 km/h；VehSpdValid；计数器；CRC |
+| RADAR_TGT | 0x120 | RADAR → AEB_ECU | 50 ms（= 主闭环雷达更新周期） | Motorola | TgtDist 13 bit，0.05 m，0–409.55 m；TgtRelSpd 12 bit 有符号，0.05 m/s，−70–70 m/s；TgtValid 1 bit；TgtQuality 2 bit；计数器 4 bit；CRC 8 bit |
+| EGO_SPEED | 0x0B0 | ESC → AEB_ECU | 20 ms（= 主闭环车速采样周期） | Intel | VehSpd 16 bit，0.01 km/h，0–300 km/h；VehSpdValid；计数器；CRC |
 | AEB_CMD | 0x0A0 | AEB_ECU → BRAKE_ECU, HMI | 10 ms（= AEB 任务周期） | Intel | AEB_AccelReq 12 bit 有符号，0.01 m/s²（负 = 制动），−16–16；AEB_State 3 bit；AEB_BrkReqActive；AEB_WarnLvl 2 bit；AEB_Avail 2 bit（0 可用 / 1 降级 / 2 不可用）；AEB_FaultReason 4 bit；计数器；CRC |
 
 - 周期用 `BA_ "GenMsgCycleTime"` 声明，Data ID 用自定义属性 `BA_ "E2E_DataID"` 声明；每个周期和分辨率的 `CM_` 注释里都写了 "DESIGN ASSUMPTION"（有测试检查）。
-- 三个周期刻意取成 P5 模型的周期，这样无故障总线才能和 P5 逐步对齐。上游仓库的 PRE_COLLISION 是 30 ms，这里用 10 ms 是为了这个对齐，是设计选择。
+- 三个周期刻意取成主闭环模型的周期，这样无故障总线才能和主闭环逐步对齐。上游仓库的 PRE_COLLISION 是 30 ms，这里用 10 ms 是为了这个对齐，是设计选择。
 - 解析器和编解码器（`dbc.py`）是自己写的，没用 cantools / python-can：支持 VERSION、BU_、BO_、SG_、CM_（含多行）、BA_DEF_、BA_DEF_DEF_、BA_、VAL_，扩展帧标志；Intel/Motorola、有符号、factor/offset；编码时四舍五入（远离零）、超出 [min|max] 或原始值范围时饱和（或严格模式下报错）。多路复用信号只解析、不支持编解码。
 
 ### 2.2 E2E：只在核实过的地方使用 AUTOSAR Profile 1 语义
@@ -81,7 +81,7 @@ AEB ECU 把监控结果映射到上游状态机的输入：
 - `ok_since` = 输入恢复的时刻 → 上游规则 R05：输入持续正常 `fault_recover_s` = 1.0 s（上游默认值）后，FAULT → STANDBY。
 - FAULT 时 AEB_Avail = 2，HMI 点失效报警灯。HMI 自己收不到 AEB_CMD（超时）时，也点报警灯。
 
-R152 对失效报警的要求见 5.1.4.1（条款号沿用 P5 报告第 2.2 节）。本次会话 EUR-Lex / UNECE 打不开，**原文措辞和其中的时间要求【未核实】**，所以下表只给设计值和实测值，不和法规时间比较。功能安全的容错时间（FTTI）没有来源，**没有给出**。
+R152 对失效报警的要求见 5.1.4.1（条款号沿用根目录 `report.md` 第 2.2 节）。本次会话 EUR-Lex / UNECE 打不开，**原文措辞和其中的时间要求【未核实】**，所以下表只给设计值和实测值，不和法规时间比较。功能安全的容错时间（FTTI）没有来源，**没有给出**。
 
 | 故障 | 检测（在哪、靠什么） | 反应 | 恢复条件 | 时间预算：设计值 / 实测（表 S8） |
 |---|---|---|---|---|
@@ -108,7 +108,7 @@ E2E 只保护**传输**，不保护**信号源**：传感器自己算错、但 C
 ## 3 怎么运行
 
 ```bash
-# 在 P5_AEB法规场景测试 目录下（Windows / Linux 相同；-B 不在 P5 目录里写 __pycache__）
+# 在仓库根目录下（Windows / Linux 相同；-B 不在仓库里写 __pycache__）
 python -B -I -m pytest -q signal_level/tests -c signal_level/pytest.ini   # 单元 + 闭环测试
 python -B -I signal_level/run_signal_level.py --workers 4                 # 全部实验，本机约 22 分钟（4 进程，约 3.1 万次闭环运行）
 python -B -I signal_level/run_signal_level.py --quick --workers 3         # 冒烟测试，约 5 分钟
@@ -116,25 +116,25 @@ python -B -I signal_level/make_tables.py                                  # resu
 python -B -I signal_level/make_figures.py                                 # results/fig_sl*.png
 ```
 
-- 依赖：Python 3.13、matplotlib、pytest（与 P5 相同），**不需要** cantools / python-can / esmini。
-- 默认用 P5 的纯 Python 后端。P5 已验证它与 esmini 在 490 次运行中一致。
+- 依赖：Python 3.11 及以上（作者用 3.13，CI 用 3.11）、matplotlib、pytest（与主闭环相同），**不需要** cantools / python-can / esmini。
+- 默认用主闭环的纯 Python 后端。它与 esmini 在 490 次运行中状态序列、是否碰撞和碰撞速度一致；最小车距在 R152-S45 一处差 0.625 m（TTC 恰好落在阈值上，预警早一帧），见 `results/summary.json` 的 `crosscheck_esmini_vs_python`。
 
 ## 4 结果（全部 SYNTHETIC，完整表格见 `results/tables_signal_level.md`）
 
 **无故障总线（E1，49 点 × 5 相位 × 2 套参数 = 490 次）**
 
-- **透明模式**（帧里带原始浮点）：490/490 次与 P5 直连闭环逐项相同，包括碰撞、碰撞速度、预警 / 制动时刻、最小车距、状态序列。说明总线、E2E 和监控这几层本身不引入误差。
+- **透明模式**（帧里带原始浮点）：490/490 次与主闭环（直连）逐项相同，包括碰撞、碰撞速度、预警 / 制动时刻、最小车距、状态序列。说明总线、E2E 和监控这几层本身不引入误差。
 - **DBC 量化模式**：395/490 次完全相同。
   - R152 的 190 次运行碰撞速度全部不变，判定翻转 0 次；
-  - Euro NCAP 的 300 次碰撞有无翻转 0 次，最大碰撞速度差 2.95 km/h（CCRb-60 原参数相位 0，制动晚一帧）；按 P5 的"5 相位取最差"口径最大差 1.08 km/h。
-  - **有 1 个 NCAP 格子变色**：CCRb-60 原参数在 P5 里最差 9.93 km/h（黄），离 10 km/h 色带边界只差 0.07 km/h；量化后相位 0 为 10.53 km/h（橙）。原参数的简化 NCAP 估计因此从 4.17 变为 4.10，新参数 5.20 不变。贴着色带边界的结果本来就不稳，报告里应该标出余量。
+  - Euro NCAP 的 300 次碰撞有无翻转 0 次，最大碰撞速度差 2.95 km/h（CCRb-60 原参数相位 0，制动晚一帧）；按主闭环的"5 相位取最差"口径最大差 1.08 km/h。
+  - **有 1 个 NCAP 格子变色**：CCRb-60 原参数在主闭环里最差 9.93 km/h（黄），离 10 km/h 色带边界只差 0.07 km/h；量化后相位 0 为 10.53 km/h（橙）。原参数的简化 NCAP 估计因此从 4.17 变为 4.10，新参数 5.20 不变。贴着色带边界的结果本来就不稳，报告里应该标出余量。
   - 其余 95 次差异**全部**能用量化解释（`results/e1_quantization_explained.csv`）：
     - 76 次是升级阈值跨越被推后或提前一帧（预警 58、部分制动 6、全力制动 12）；
     - 19 次是制动释放条件（接近速度 ≤ 0.1 m/s，正好是 TgtRelSpd 的 2 个 LSB）提前或推后一帧；
     - 升级类差异处 \|TTC_量化 − TTC_浮点\| 中位数 4.1 ms，最大 112 ms（CCRb 目标刚开始减速，接近速度只有 0.36 m/s）。
-  - 原因：P5 的场景从 TTC 6 s 开始、雷达 50 ms 一帧、阈值是 0.05 s 的整数倍，所以真实 TTC 会恰好在帧时刻等于阈值。例如浮点算出 2.599999 s 就触发预警，量化后 43.35 m / 16.65 m/s = 2.6036 s 要晚一帧。接近速度越小，TTC 量化误差越大，误差约为 (0.025/d + 0.025/v)·TTC。
+  - 原因：主闭环的场景从 TTC 6 s 开始、雷达 50 ms 一帧、阈值是 0.05 s 的整数倍，所以真实 TTC 会恰好在帧时刻等于阈值。例如浮点算出 2.599999 s 就触发预警，量化后 43.35 m / 16.65 m/s = 2.6036 s 要晚一帧。接近速度越小，TTC 量化误差越大，误差约为 (0.025/d + 0.025/v)·TTC。
 
-**总线故障对 R152 的影响（E2–E4，判定口径同 P5：5.2.1.4 碰撞速度 + 5.2.1.1 预警提前量 + 5.2.1.2 制动需求）**
+**总线故障对 R152 的影响（E2–E4，判定口径同主闭环：5.2.1.4 碰撞速度 + 5.2.1.1 预警提前量 + 5.2.1.2 制动需求）**
 
 | 条件 | 原参数（2.6/1.6/0.9 s，4 m/s²） | 新参数（3.0/2.0/1.3 s，6 m/s²） |
 |---|---|---|
@@ -194,14 +194,14 @@ python -B -I signal_level/make_figures.py                                 # resu
   - "保持"会把误制动一起保持，所以必须和 E2E 配合，并设时间上限；
   - 驾驶员模型和后车风险都没有建模；
   - 0.2 s 的恢复时间是否会造成状态抖动，没有专门评估。
-- **其余沿用 P5 的局限**：一维纵向玩具模型，传感器、制动、路面理想化，没有驾驶员。
+- **其余沿用主闭环的局限**：一维纵向玩具模型，传感器、制动、路面理想化，没有驾驶员。
 
 ## 6 来源与未核实项
 
 - **已核实**（官方 PDF，本地抽取文本逐条对照，并用官方示例做单元测试）：
   - AUTOSAR FO R24-11 PRS E2E Protocol（文档号 849）：6.1、6.5、6.5.1.1–6.5.1.3、6.5.2、6.5.3.1、6.5.4、6.5.5、6.12、9.8.2；
   - AUTOSAR CP R24-11 SWS CRC Library（文档号 16）：7.2.1.1。
-- **沿用 P5 已核实的 R152 条款**：5.2.1.1、5.2.1.2、5.2.1.4、6.4、6.5、6.10.1（来自 EUR-Lex OJ L 2024/2497；数值直接从 `aebtest/regulations.py` 导入，没有重抄）。
+- **沿用主闭环已核实的 R152 条款**：5.2.1.1、5.2.1.2、5.2.1.4、6.4、6.5、6.10.1（来自 EUR-Lex OJ L 2024/2497；数值直接从 `aebtest/regulations.py` 导入，没有重抄）。
 - **【未核实】**：
   - R152 5.1.4.1 失效警告的原文措辞与时间要求（EUR-Lex / UNECE 本次打不开）；
   - ISO 26262 的 FTTI 概念与取值（原文没查阅）；
@@ -217,12 +217,12 @@ e2e.py                  CRC-8（0x1D）与 Profile 1 protect / check
 vbus.py                 虚拟总线与故障注入
 supervision.py          接收监控：E2E 状态、可信性、超时、恢复
 ecus.py                 RADAR / ESC / AEB / BRAKE / HMI 节点
-sl_loop.py              信号级闭环（P5 closed_loop 的逐行镜像 + 总线）
+sl_loop.py              信号级闭环（主闭环 closed_loop 的逐行镜像 + 总线）
 sl_experiments.py       实验定义与并行运行（≤ 4 进程）
 run_signal_level.py     E1–E6 全部实验 → results/*.csv、summary_signal_level.json
 make_tables.py / make_figures.py   表格与图
-tests/                  pytest：DBC、E2E、总线与监控、闭环（含与 P5 逐项一致性）
+tests/                  pytest：DBC、E2E、总线与监控、闭环（含与主闭环逐项一致性）
 results/                CSV、tables_signal_level.md、fig_sl1–3.png
 ```
 
-（本目录的结果已并入 P5 `report.md` 第 10 节。）
+（本目录的结果已并入根目录 `report.md` 第 10 节。）

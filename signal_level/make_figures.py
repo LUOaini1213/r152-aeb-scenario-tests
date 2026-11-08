@@ -1,6 +1,6 @@
 """Figures for the signal-level study (reads results/*.csv written by run_signal_level.py).
 
-  fig_sl1_equivalence.png   fault-free bus vs P5 direct loop; why quantization moves a threshold by one frame
+  fig_sl1_equivalence.png   fault-free bus vs direct main loop; why quantization moves a threshold by one frame
   fig_sl2_bus_faults.png    frame loss, burst loss at the critical moment, added latency
   fig_sl3_timeline_e2e.png  200 ms burst timeline (baseline vs mitigation) and one corrupted RADAR_TGT frame
 
@@ -69,7 +69,7 @@ def fig1():
         shift = fnum(r["dbc_dt_fcw_s"]) or fnum(r["dbc_dt_brake_s"]) or 0.0
         return 1 if shift > 1e-9 else (2 if shift < -1e-9 else 3)
 
-    cats = ["identical to P5", "warning/brake 1 radar frame (50 ms) later",
+    cats = ["identical to direct loop", "warning/brake 1 radar frame (50 ms) later",
             "warning/brake 1 radar frame (50 ms) earlier", "a later transition shifted by 1 frame"]
     trans_ident = sum(truth(r["transparent_identical"]) for r in runs)
     counts = [sum(category(r) == k for r in runs) for k in range(len(cats))]
@@ -86,7 +86,7 @@ def fig1():
     cflips = sum(truth(r.get("ncap_colour_flip", "False")) for r in ncap)
     r152_same_v = sum(abs(fnum(r["dbc_dv_kph"])) < 1e-9 for r in r152)
     dv_ncap = max(abs(fnum(r["dbc_dv_kph"])) for r in ncap)
-    a.set_title("DBC-quantized bus vs P5 direct loop (fault-free)")
+    a.set_title("DBC-quantized bus vs direct main loop (fault-free)")
     a.text(0.98, 0.40, f"transparent bus (no quantization):\n  {trans_ident}/{n} runs identical\n"
                        f"DBC bus, R152 ({len(r152)} runs):\n  impact speed unchanged {r152_same_v}/{len(r152)}\n"
                        f"  verdict changes {flips}\n"
@@ -124,7 +124,7 @@ def fig1():
                                                                       "drawn on the frame" if clipped else ""),
            color=INK2, fontsize=7, ha="right", va="top")
     b.set_ylabel("TTC from DBC-decoded signals minus threshold [ms]")
-    b.set_xlabel("TTC from float signals (P5 direct) minus threshold [ms]")
+    b.set_xlabel("TTC from float signals (direct main loop) minus threshold [ms]")
     b.set_title(f"Why: float and quantized TTC straddle the threshold ({len(expl)} runs)")
     b.legend(loc="lower left")
     note(fig, "SYNTHETIC simulation. TgtDist 0.05 m, TgtRelSpd 0.05 m/s (design assumptions). "
@@ -187,7 +187,7 @@ def fig2():
     c.set_xlim(-2, 58)
     c.set_ylim(-1, 40)
     c.legend(loc="center left")
-    note(fig, "SYNTHETIC simulation, P5 toy vehicle model. Baseline = upstream FAULT reaction (brake released, 1.0 s heal); "
+    note(fig, "SYNTHETIC simulation, main-loop toy vehicle model. Baseline = upstream FAULT reaction (brake released, 1.0 s heal); "
               "'hold + 0.2 s heal' = mitigation variant HR. Source: results/e2_*, e3_*, e4_*.csv")
     fig.tight_layout(rect=(0, 0.03, 1, 1))
     fig.savefig(RES / "fig_sl2_bus_faults.png", dpi=150)

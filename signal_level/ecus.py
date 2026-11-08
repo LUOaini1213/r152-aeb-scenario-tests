@@ -1,8 +1,8 @@
 """Bus nodes around the vendored AEB state machine.
 
-RADAR / ESC   encode the P5 sensor values into RADAR_TGT / EGO_SPEED, E2E-protect, put them on the bus
+RADAR / ESC   encode the main-loop sensor values into RADAR_TGT / EGO_SPEED, E2E-protect, put them on the bus
 AEB_ECU       receive + supervise RADAR_TGT and EGO_SPEED (supervision.py), compute TTC with the upstream
-              ``analyzer.ttc``, step the UNCHANGED upstream ``StateMachine`` (loaded by P5's aeb_loader), send
+              ``analyzer.ttc``, step the UNCHANGED upstream ``StateMachine`` (loaded by aebtest/aeb_loader.py), send
               AEB_CMD every task.  Replaces the upstream CAN shell (``AebEcu`` / ``Supervisor``), which needs
               cantools and the opendbc Toyota DBC and therefore cannot run here.
 BRAKE_ECU     receive + supervise AEB_CMD; executes the deceleration request only while AEB_CMD is healthy
@@ -42,7 +42,7 @@ class TxNode:
 
 
 def radar_values(meas: tuple[float, float] | None) -> dict:
-    """P5 RadarModel output (range, range rate) -> RADAR_TGT signals; None = no target reported."""
+    """Main-loop RadarModel output (range, range rate) -> RADAR_TGT signals; None = no target reported."""
     if meas is None:
         return {"TgtValid": 0, "TgtQuality": 0, "TgtDist": 0.0, "TgtRelSpd": 0.0}
     return {"TgtValid": 1, "TgtQuality": 3, "TgtDist": meas[0], "TgtRelSpd": meas[1]}

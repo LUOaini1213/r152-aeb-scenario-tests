@@ -1,7 +1,7 @@
 """Experiment definitions shared by run_signal_level.py, make_figures.py and the tests.
 
-Conventions copied from P5 (aebtest/experiments.py): dt = 2 ms, ECU task 10 ms, radar 50 ms, brake dead time
-80 ms + tau 0.12 s, five radar sampling phases, original vs proposed AebConfig.  R152 verdicts use P5's
+Conventions copied from the main loop (aebtest/experiments.py): dt = 2 ms, ECU task 10 ms, radar 50 ms, brake dead time
+80 ms + tau 0.12 s, five radar sampling phases, original vs proposed AebConfig.  R152 verdicts use the main loop's
 ``evaluate.r152_verdict`` (5.2.1.4 impact speed, 5.2.1.1 warning lead, 5.2.1.2 demand >= 5 m/s2).
 """
 from __future__ import annotations
@@ -54,7 +54,7 @@ class Job:
     case_id: str
     cfg_name: str                  # "original" | "proposed"
     phase: float = 0.0
-    setup: BusSetup | None = None  # None = P5 direct closed loop (no bus)
+    setup: BusSetup | None = None  # None = direct main closed loop (no bus)
     tag: str = ""
     record: bool = False
     aeb_overrides: tuple = ()      # ((AebConfig field, value), ...) applied with dataclasses.replace

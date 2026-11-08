@@ -1,20 +1,20 @@
-"""Signal-level closed loop: P5's ``aebtest/closed_loop.py::_loop`` with a virtual CAN bus inserted.
+"""Signal-level closed loop: the main loop's ``aebtest/closed_loop.py::_loop`` with a virtual CAN bus inserted.
 
-Everything outside the communication path is P5's code or a line-by-line copy of it: target motion from
+Everything outside the communication path is the main loop's code or a line-by-line copy of it: target motion from
 the backend (PythonBackend by default, esmini possible), bumper gap, contact interpolation, Euro NCAP end
 condition, RadarModel, BrakeActuator, friction limit, point-mass Ego, end-of-test rules.  Lines that differ
-from P5 are marked ``# BUS``.
+from the main loop are marked ``# BUS``.
 
 Per plant step (dt = 2 ms):
-  radar update instant -> RADAR node encodes RADAR_TGT -> bus          (50 ms, P5 radar update period)
-  every 20 ms          -> ESC node encodes EGO_SPEED -> bus             (P5 speed_sample_s)
+  radar update instant -> RADAR node encodes RADAR_TGT -> bus          (50 ms, main-loop radar update period)
+  every 20 ms          -> ESC node encodes EGO_SPEED -> bus             (main-loop speed_sample_s)
   bus.deliver(t)       -> AEB ECU: E2E check, plausibility, supervision
   every 10 ms          -> AEB task: TTC, upstream StateMachine.step, AEB_CMD -> bus
   bus.deliver(t)       -> BRAKE ECU / HMI: E2E check, timeout; brake request -> actuator -> plant
 
 Recorded times are SIGNAL-LEVEL times: t_fcw = first instant the HMI shows the warning, t_brake = first
 instant the brake ECU applies a request (so bus latency and lost frames are included).  The ECU-internal
-times are kept as *_ecu.  With a fault-free, zero-latency bus both are identical to P5's direct loop.
+times are kept as *_ecu.  With a fault-free, zero-latency bus both are identical to the main loop's direct loop.
 """
 from __future__ import annotations
 
@@ -25,8 +25,8 @@ from .paths import DBC_PATH, bootstrap
 
 bootstrap()
 
-from aebtest.closed_loop import AEB, RunConfig, RunResult, _true_ttc  # noqa: E402  (P5)
-from aebtest.models import BrakeActuator, RadarModel, friction_limit_mps2  # noqa: E402  (P5)
+from aebtest.closed_loop import AEB, RunConfig, RunResult, _true_ttc  # noqa: E402  (aebtest)
+from aebtest.models import BrakeActuator, RadarModel, friction_limit_mps2  # noqa: E402  (aebtest)
 
 from .dbc import Database, load_dbc  # noqa: E402
 from .ecus import (CMD_MSG, RADAR_MSG, SPEED_MSG, AebEcuBus, BrakeEcuBus, HmiBus, TxNode,  # noqa: E402
@@ -79,7 +79,7 @@ class BusRunResult(RunResult):
 
 
 def _check_cycles(db: Database, cfg: RunConfig, radar: RadarModel) -> None:
-    """The DBC cycle times must be the periods of P5's models, otherwise timeouts would be inconsistent."""
+    """The DBC cycle times must be the periods of the main loop's models, otherwise timeouts would be inconsistent."""
     pairs = {RADAR_MSG: radar.n_update * cfg.dt, SPEED_MSG: cfg.speed_sample_s, CMD_MSG: cfg.aeb.task_s}
     for name, period in pairs.items():
         if abs(db.get_message_by_name(name).cycle_time_ms / 1000.0 - period) > 1e-9:
@@ -138,7 +138,7 @@ def _loop(tp, params, backend, cfg: RunConfig, bus: BusSetup, record: bool) -> B
         s_t, v_t = backend.target()
         gap = (s_t + tr) - (s_e + ef)
 
-        # ---- outcome bookkeeping (identical to P5) ------------------------------------------------
+        # ---- outcome bookkeeping (identical to the main loop) ------------------------------------------------
         if gap <= 0.0:
             g0, ve0, vt0, tp0 = prev if prev else (gap, v_e, v_t, t)
             f = g0 / (g0 - gap) if g0 > 0 else 0.0
@@ -212,7 +212,7 @@ def _loop(tp, params, backend, cfg: RunConfig, bus: BusSetup, record: bool) -> B
                              ("brake_rx_faulted", int(brake.rx.faulted))):
                 ser[key].append(val)
 
-        # ---- end of test (identical to P5) ----------------------------------------------------------
+        # ---- end of test (identical to the main loop) ----------------------------------------------------------
         target_can_slow = tp.family == "CCRb" and v_t > 0.0
         if tp.protocol == "SOTIF":
             gh = cfg.sensor.ghost
@@ -227,7 +227,7 @@ def _loop(tp, params, backend, cfg: RunConfig, bus: BusSetup, record: bool) -> B
                 res.end_reason = "timeout"
             break
 
-        # ---- plant (identical to P5) ------------------------------------------------------------------
+        # ---- plant (identical to the main loop) ------------------------------------------------------------------
         prev = (gap, v_e, v_t, t)
         v_new = max(0.0, v_e - a_act * dt)
         if v_new == 0.0 and a_act > 0.0:

@@ -1,4 +1,4 @@
-"""P5 signal level: the R152 closed loop of P5 run through DBC encoding, a virtual CAN bus and E2E checks.
+"""Signal level: the R152 closed loop of aebtest run through DBC encoding, a virtual CAN bus and E2E checks.
 
 Modules
   dbc          minimal Vector-DBC parser + Intel/Motorola signal codec (written for this project)

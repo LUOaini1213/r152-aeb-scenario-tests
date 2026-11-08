@@ -1,6 +1,6 @@
 """Run every signal-level experiment and write results/ (CSV, JSON, Markdown tables).
 
-  E1 equivalence  P5 direct loop vs transparent bus vs DBC bus; 49 regulatory points x 5 phases x 2 parameter sets
+  E1 equivalence  direct main loop vs transparent bus vs DBC bus; 49 regulatory points x 5 phases x 2 parameter sets
   E2 frame loss   i.i.d. loss {0,1,5,10,20} % on every frame; 6 official R152 points x 5 phases x 20 seeds;
                   degradation variants U (baseline) and HR
   E3 burst loss   bus-wide burst {100,200,500} ms starting at (fault-free brake onset + offset), offset -0.5..+0.5 s;
@@ -11,7 +11,7 @@
                       E2E on vs off (with and without the DBC range check)
   E6 fault demos  measured detection / reaction / recovery times for the fault table; time series for figure 3
 
-Run from the P5 folder:  python -B -I signal_level/run_signal_level.py [--workers 3] [--quick] [--only e1,e2]
+Run from the repo root:  python -B -I signal_level/run_signal_level.py [--workers 3] [--quick] [--only e1,e2]
 All data are SYNTHETIC (simulation of a toy model); see README.md for the assumptions.
 """
 import argparse
@@ -111,7 +111,7 @@ def e1(W, quick):
                            max_abs_dmin_gap_m=max(abs(r["dbc_dmin_gap_m"]) for r in sel),
                            ncap_colour_flips=sum(bool(r.get("ncap_colour_flip")) for r in sel))
             summ.append(row)
-    # worst over phases per case (what P5 reports)
+    # worst over phases per case (what the main loop reports)
     worst = []
     for c in ids:
         for n in CONFIGS:
@@ -131,7 +131,7 @@ def e1(W, quick):
         q = run_job(Job(r["case_id"], r["config"], r["phase"], BusSetup(), record=True))
         sd, sq = d.series, q.series
         n = min(len(sd["t"]), len(sq["t"]))
-        # skip the start-up difference (bus: OFF until the first radar frame arrives, P5: STANDBY at t = 0)
+        # skip the start-up difference (bus: OFF until the first radar frame arrives, main loop: STANDBY at t = 0)
         i = next((k for k in range(n) if sd["state"][k] != sq["state"][k] and int(S.OFF) not in
                   (sd["state"][k], sq["state"][k])), None)
         e = {"case_id": r["case_id"], "config": r["config"], "phase": r["phase"], "dv_kph": r["dbc_dv_kph"],

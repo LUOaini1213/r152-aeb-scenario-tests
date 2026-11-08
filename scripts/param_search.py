@@ -40,6 +40,14 @@ def evaluate(aeb, kind, lib, workers):
     return ok, s0, s1, late
 
 
+def select(rows):
+    """Deterministic selection rule over the candidate rows (row 0 = original, excluded).
+    Feasible = R152 constraint and CCRs low-speed gate both met; maximise the objective; tie-break on the
+    later intervention (smaller ttc_pb_s, then smaller ttc_fb_s).  Returns the chosen row or None."""
+    feas = [r for r in rows if r["name"] != "original" and r["r152_constraint_ok"] and r["ccrs_gate_ok"]]
+    return max(feas, key=lambda r: (r["objective"], -r["ttc_pb_s"], -r["ttc_fb_s"])) if feas else None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--esmini-lib", required=False)
@@ -73,9 +81,7 @@ def main():
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader()
         w.writerows(rows)
-    feas = [r for r in rows[1:] if r["r152_constraint_ok"] and r["ccrs_gate_ok"]]
-    best = max(feas, key=lambda r: (r["objective"], -r["ttc_pb_s"], -r["ttc_fb_s"])) if feas else None
-    print("chosen:", best)
+    print("chosen:", select(rows))
 
 
 if __name__ == "__main__":

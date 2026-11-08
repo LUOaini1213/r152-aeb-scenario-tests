@@ -1,6 +1,6 @@
 """Minimal Vector-DBC parser and signal codec, written for this project (cantools / python-can are not used).
 
-Scope - what the P5 signal-level test needs:
+Scope - what the main-loop signal-level test needs:
   * statements parsed: VERSION, BU_, BO_, SG_, CM_, BA_DEF_, BA_DEF_DEF_, BA_, VAL_.  Every other statement
     (VAL_TABLE_, SIG_VALTYPE_, BO_TX_BU_, ...) is skipped.  Multiplexer indicators (M / mN) are parsed and
     kept on the signal, but multiplexed decoding is NOT implemented (ValueError on encode/decode).

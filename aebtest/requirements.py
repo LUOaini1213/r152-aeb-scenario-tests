@@ -1,7 +1,7 @@
 """Requirement registry for the traceability matrix (scripts/make_traceability.py -> traceability.csv).
 
 Chain: regulation / protocol clause -> function requirement (ID) -> signals of the reused function
-(opendbc Toyota DBC messages used by can-bus-analyzer's AebEcu; in P5 the same quantities are produced by
+(opendbc Toyota DBC messages used by can-bus-analyzer's AebEcu; in this repo the same quantities are produced by
 the sensor model without CAN encoding) -> OpenSCENARIO test case IDs -> result.
 
 Signal names were checked against dbc/toyota_nodsu_pt_generated.dbc of can-bus-analyzer @27da004:
@@ -35,7 +35,7 @@ class Req:
     signals: str
     safety_goal: str = ""
     tests: str = ""           # selector key used by make_traceability.py
-    na_reason: str = ""       # if not verified in P5: why, and where it is verified instead
+    na_reason: str = ""       # if not verified in this repo: why, and where it is verified instead
     notes: str = ""
 
 
@@ -55,13 +55,13 @@ REQS: list[Req] = [
         na_reason="HMI 实现不在仿真范围；状态机只输出一个 PCS_HUD.FCW 位，需在整车 HMI 层验证"),
     Req("FR-07", R152, "5.3.1 / 5.3.2", "驾驶员可通过明确操作（如急踩加速踏板）中断预警和紧急制动", "功能",
         "GAS_PEDAL.GAS_PEDAL, BRAKE_MODULE.BRAKE_PRESSED -> PRE_COLLISION.*", "SG3",
-        na_reason="P5 未复测；上游 can-bus-analyzer 在 CAN 总线上测过 OVR-01/OVR-02/DRV-01（见其 results/function/testcases.md）。"
+        na_reason="本项目未复测；上游 can-bus-analyzer 在 CAN 总线上测过 OVR-01/OVR-02/DRV-01（见其 results/function/testcases.md）。"
                   "状态机没有转向超越条件，属已知缺口"),
     Req("FR-08", R152, "5.1.4.1 / 6.8", "系统失效时点亮恒定黄色失效警告", "功能", "PCS_HUD.PCS_INDICATOR=2（FAULT）", "SG1/SG2",
-        na_reason="P5 不经过 CAN 输入监控；上游测过 FLT-01..04（超时 / checksum → FAULT）"),
+        na_reason="主闭环不经过 CAN 输入监控；上游测过 FLT-01..04（超时 / checksum → FAULT）"),
     Req("FR-09", R152, "5.1.6", "无碰撞风险时尽量少发预警、避免紧急制动（误作用抑制）", "功能",
         f"{IN_RADAR} -> {OUT_WARN}, {OUT_BRAKE}", "SG1", tests="sotif:ghost",
-        notes="R152 以附件 3 文件审查方式评估；P5 用幻影目标注入量化误制动（ISO 21448 触发条件 TC4）"),
+        notes="R152 以附件 3 文件审查方式评估；本项目用幻影目标注入量化误制动（ISO 21448 触发条件 TC4）"),
     Req("TC-01", f"{R152} / {NCAP}", "R152 6.4/6.5 (b)；NCAP 1.5.1", "试验开始时 TTC ≥ 4 s（NCAP：T0 = TTC 4 s）", "试验条件",
         "-", tests="all:ccr_constant", notes="本项目在 TTC 6 s 处开始仿真（2 s 预行驶）"),
     Req("TC-02", R152, "6.5", "运动目标车速 20 km/h（公差 +0/-2）", "试验条件", "-", tests="r152:CCRm"),
